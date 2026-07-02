@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>RusStudy. — La Visite Immersive 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Space Grotesk',sans-serif;background:#F0EBE3;color:#0A0A0A;overflow-x:hidden}
+:root{
+  --cream:#F0EBE3;--black:#0A0A0A;--space:#05050d;
+  --blue:#2460E8;--orange:#F97316;--yellow:#FBBB21;
+  --red:#EF4444;--green:#22C55E;--purple:#A855F7;--white:#fff;--pad:16px;
+}
+/* ── NAV (shared look with index.html) ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px var(--pad);background:var(--cream);transition:border-bottom .2s}
+.logo{display:flex;flex-direction:column;text-decoration:none;color:var(--black)}
+.logo-main{font-size:1.75rem;font-weight:700;letter-spacing:-.05em;line-height:1}
+.logo-main span{color:var(--purple)}
+.logo-sub{font-size:.48rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;opacity:.5;margin-top:1px}
+.nav-r{display:flex;gap:8px;align-items:center}
+.pill-cta{background:var(--purple);border:none;border-radius:50px;padding:11px 20px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.88rem;color:var(--black);cursor:pointer;text-decoration:none;transition:filter .15s,transform .15s}
+.pill-cta:hover{filter:brightness(1.1);transform:scale(1.03)}
+.pill-ghost{border:1.5px solid rgba(0,0,0,.18);border-radius:50px;padding:10px 18px;font-weight:700;font-size:.85rem;color:var(--black);text-decoration:none;transition:background .15s}
+.pill-ghost:hover{background:rgba(0,0,0,.06)}
+.sq-btn{width:48px;height:48px;border-radius:12px;background:var(--black);border:none;cursor:pointer;display:grid;place-items:center;transition:transform .15s;flex-shrink:0}
+.sq-btn:hover{transform:scale(1.05)}
+.sq-btn svg{stroke:white;fill:none;width:20px;height:20px;stroke-width:2.2}
+.mob-nav{position:fixed;inset:0;z-index:900;background:var(--cream);display:none;flex-direction:column;padding:80px var(--pad) var(--pad);gap:8px;overflow-y:auto}
+.mob-nav.open{display:flex}
+.mob-nav a{display:flex;align-items:center;justify-content:space-between;border-radius:18px;padding:22px 20px;font-weight:700;font-size:1.15rem;text-decoration:none;color:var(--black)}
+.mob-nav-top{position:fixed;top:0;left:0;right:0;z-index:910;display:flex;align-items:center;justify-content:space-between;padding:14px var(--pad);background:var(--cream)}
+.mob-apply{background:var(--purple);border-radius:50px;padding:15px 20px;text-align:center;font-weight:700;font-size:1rem;color:var(--black);text-decoration:none;margin-top:8px}
+
+/* ── INTRO ── */
+.intro{padding:148px var(--pad) 40px;text-align:center}
+.intro .tag{display:inline-block;border:1.8px solid rgba(0,0,0,.25);border-radius:50px;padding:6px 16px;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.intro h1{font-size:clamp(2.1rem,8vw,4.2rem);font-weight:700;letter-spacing:-.04em;line-height:1.05}
+.intro h1 span{color:var(--purple)}
+.intro p{font-size:clamp(.92rem,2.4vw,1.08rem);opacity:.6;max-width:520px;margin:14px auto 0;line-height:1.6}
+.scroll-hint{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.45;animation:bob 1.8s ease-in-out infinite}
+.scroll-hint span{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* ── TOUR (pinned 3D scroll engine) ── */
+.tour{position:relative;height:820vh}
+.tour-stage{position:sticky;top:0;height:100svh;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#10122a 0%,var(--space) 70%)}
+#tourBg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#tourFx{position:absolute;inset:0;width:100%;height:100%;display:block;mix-blend-mode:screen;pointer-events:none}
+.tour-cam{position:absolute;inset:0;perspective:1400px;perspective-origin:50% 50%}
+.tour-track{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.tour-panel{position:absolute;left:50%;top:50%;width:min(380px,78vw);border-radius:26px;padding:26px 24px;will-change:transform,opacity,filter;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.tp-tag{display:inline-block;border:1.5px solid currentColor;opacity:.55;border-radius:50px;padding:4px 12px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.tp-tag b{opacity:1}
+.tour-panel h3{font-size:clamp(1.3rem,4.4vw,1.9rem);font-weight:700;letter-spacing:-.03em;line-height:1.12}
+.tour-panel p{font-size:.84rem;opacity:.75;margin-top:8px;line-height:1.55}
+.tp-fakebar{display:flex;align-items:center;justify-content:space-between;margin:-2px 0 16px;opacity:.8}
+.tp-fakebar .fb-logo{font-weight:700;font-size:.78rem;letter-spacing:-.03em}
+.tp-fakebar .fb-pill{border-radius:50px;padding:4px 12px;font-size:.6rem;font-weight:700;background:rgba(0,0,0,.12)}
+.tp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:16px}
+.tp-stat{background:rgba(0,0,0,.14);border-radius:12px;padding:10px 6px;text-align:center}
+.tp-stat b{display:block;font-size:1rem;font-weight:700}
+.tp-stat span{font-size:.58rem;opacity:.65;letter-spacing:.05em;text-transform:uppercase}
+.tp-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.tp-mini{border-radius:12px;padding:12px 10px;font-size:.72rem;font-weight:700;background:rgba(255,255,255,.16)}
+.tp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tp-chip{background:rgba(255,255,255,.85);color:#0A0A0A;border-radius:50px;padding:6px 12px;font-size:.68rem;font-weight:700}
+.tp-steps{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.tp-step{display:flex;align-items:center;gap:10px;font-size:.78rem;font-weight:600;opacity:.9}
+.tp-step b{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:.68rem;flex-shrink:0}
+.tp-ring{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;margin:14px auto 4px;background:conic-gradient(var(--green) 0 60%,rgba(255,255,255,.12) 60% 100%)}
+.tp-ring i{width:64px;height:64px;border-radius:50%;background:#0D0D0D;display:grid;place-items:center;font-weight:700;font-size:1.05rem}
+.tp-cta-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:#fff;color:#0A0A0A;border-radius:50px;padding:13px 22px;font-weight:700;font-size:.85rem;text-decoration:none;cursor:pointer;border:none;font-family:'Space Grotesk',sans-serif;transition:transform .15s}
+.tp-cta-btn:hover{transform:scale(1.04)}
+
+.tp-bg-cream{background:var(--cream);color:#0A0A0A}
+.tp-bg-blue{background:var(--blue);color:#fff}
+.tp-bg-split{background:linear-gradient(135deg,var(--yellow) 50%,var(--orange) 50%);color:#0A0A0A}
+.tp-bg-purple{background:var(--purple);color:#0A0A0A}
+.tp-bg-orange{background:var(--orange);color:#0A0A0A}
+.tp-bg-green{background:var(--green);color:#0A0A0A}
+.tp-bg-dark{background:#15151c;color:#fff;border:1px solid rgba(255,255,255,.08)}
+.tp-bg-black{background:#0A0A0A;color:#fff}
+
+.tour-hud{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:flex-end;justify-content:space-between;padding:0 var(--pad) 22px;pointer-events:none;z-index:5}
+.hud-left{color:#fff}
+.hud-idx{font-size:.66rem;font-weight:700;letter-spacing:.14em;opacity:.5}
+.hud-name{font-size:clamp(1.1rem,4vw,1.6rem);font-weight:700;letter-spacing:-.03em;margin-top:2px}
+.hud-track{width:min(220px,46vw);height:3px;background:rgba(255,255,255,.15);border-radius:50px;margin-top:10px;overflow:hidden}
+.hud-track i{display:block;height:100%;width:0%;background:var(--purple);border-radius:50px}
+.tour-dots{display:flex;flex-direction:column;gap:7px}
+.tour-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .2s,transform .2s}
+.tour-dots i.on{background:var(--purple);transform:scale(1.5)}
+.tour-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,.55) 100%)}
+.scroll-prompt{position:absolute;top:24px;left:0;right:0;text-align:center;color:#fff;opacity:.55;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;transition:opacity .4s;pointer-events:none}
+
+/* ── RECAP ── */
+.recap{padding:14px var(--pad) 0}
+.recap-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.recap-card{border-radius:20px;padding:22px 20px;text-decoration:none;color:inherit;display:flex;align-items:center;justify-content:space-between;gap:14px;transition:transform .2s}
+.recap-card:hover{transform:translateY(-3px)}
+.recap-card .ic{font-size:1.6rem}
+.recap-card h4{font-size:1.02rem;font-weight:700;letter-spacing:-.02em}
+.recap-card p{font-size:.78rem;opacity:.65;margin-top:3px}
+.recap-card .go{width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.12);display:grid;place-items:center;flex-shrink:0}
+.recap-card .go svg{stroke:currentColor;fill:none;width:14px;height:14px;stroke-width:2.5}
+
+/* ── SECTION GENERICS ── */
+.sec{padding:46px var(--pad) 0}
+.sec-head{margin-bottom:18px}
+.sec-label{display:inline-block;border:1.8px solid rgba(0,0,0,.25);border-radius:50px;padding:5px 14px;font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+.sec-head h2{font-size:clamp(1.7rem,6vw,2.6rem);font-weight:700;letter-spacing:-.04em;line-height:1.1}
+.sec-head p{font-size:.88rem;opacity:.6;margin-top:8px;max-width:520px;line-height:1.6}
+
+/* ── WHY GRID (expanded) ── */
+.why-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.why-card{border-radius:20px;padding:22px 20px;will-change:transform;transition:transform .25s cubic-bezier(.23,1,.32,1),box-shadow .25s}
+.why-card:hover{box-shadow:0 18px 50px rgba(0,0,0,.16)}
+.why-ic{font-size:1.6rem;margin-bottom:10px}
+.why-card h3{font-size:1.08rem;font-weight:700;letter-spacing:-.02em}
+.why-card p{font-size:.82rem;opacity:.75;margin-top:6px;line-height:1.55}
+.bg-blue{background:var(--blue);color:#fff}.bg-orange{background:var(--orange);color:var(--black)}
+.bg-yellow{background:var(--yellow);color:var(--black)}.bg-green{background:var(--green);color:var(--black)}
+.bg-purple{background:var(--purple);color:var(--black)}.bg-cream{background:var(--cream);color:var(--black);border:1.5px solid rgba(0,0,0,.1)}
+
+/* compare table */
+.cmp-wrap{margin-top:14px;border-radius:20px;overflow:hidden;border:1.5px solid rgba(0,0,0,.1)}
+.cmp-row{display:grid;grid-template-columns:1.4fr 1fr 1fr;font-size:.78rem}
+.cmp-row > div{padding:12px 10px}
+.cmp-row.head{background:#0A0A0A;color:#fff;font-weight:700}
+.cmp-row:not(.head):nth-child(odd){background:rgba(0,0,0,.03)}
+.cmp-row b{display:block;font-size:.9rem}
+
+/* ── STATS COUNT ── */
+.stats2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat2{background:var(--black);color:#fff;border-radius:18px;padding:22px 12px;text-align:center}
+.stat2-n{font-size:clamp(1.5rem,5.5vw,2.2rem);font-weight:700;letter-spacing:-.04em}
+.stat2-l{font-size:.62rem;opacity:.4;margin-top:5px;letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+
+/* ── PROCESS TIMELINE v2 ── */
+.proc2{display:flex;flex-direction:column;gap:0;position:relative;margin-top:8px}
+.proc2::before{content:'';position:absolute;left:23px;top:6px;bottom:6px;width:2px;background:rgba(0,0,0,.12)}
+.proc2-item{display:flex;gap:16px;padding:16px 0;position:relative}
+.proc2-num{width:48px;height:48px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-weight:700;color:#fff;z-index:1}
+.proc2-body h4{font-size:1rem;font-weight:700}
+.proc2-body p{font-size:.82rem;opacity:.65;margin-top:4px;line-height:1.55}
+.proc2-meta{display:inline-block;margin-top:8px;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.45}
+
+/* ── PROGRAMMES CATALOGUE ── */
+.prog-pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.prog-pills::-webkit-scrollbar{display:none}
+.prog-pill{background:var(--cream);border:1.6px solid rgba(0,0,0,.12);border-radius:50px;padding:9px 16px;font-size:.8rem;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .15s}
+.prog-pill.active{background:#0A0A0A;color:#fff;border-color:#0A0A0A}
+.prog2-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px}
+.prog2-card{border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:8px;transition:transform .2s}
+.prog2-card:hover{transform:translateY(-3px)}
+.prog2-top{display:flex;justify-content:space-between;align-items:flex-start}
+.prog2-card h4{font-size:1.12rem;font-weight:700;letter-spacing:-.02em}
+.prog2-tag{background:rgba(0,0,0,.12);border-radius:50px;padding:4px 11px;font-size:.66rem;font-weight:700}
+.prog2-meta{display:flex;gap:14px;font-size:.74rem;font-weight:600;opacity:.75}
+.prog2-card p{font-size:.8rem;opacity:.7;line-height:1.5}
+
+/* ── UNIVERSITIES TABS ── */
+.uni-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.uni-tab{background:#fff;border:1.6px solid rgba(0,0,0,.1);border-radius:50px;padding:9px 16px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s}
+.uni-tab.active{background:var(--green);border-color:var(--green)}
+.uni-panel{display:none;flex-direction:column;gap:8px;margin-top:14px}
+.uni-panel.active{display:flex}
+.uni2-card{background:#fff;border:1.5px solid rgba(0,0,0,.08);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.uni2-card .badge{background:#0A0A0A;color:#fff;border-radius:50px;padding:3px 10px;font-size:.62rem;font-weight:700}
+.uni2-card h5{font-size:.92rem;font-weight:700}
+.uni2-card span{font-size:.72rem;opacity:.5}
+
+/* ── TESTIMONIAL CAROUSEL ── */
+.testi-carousel{position:relative;overflow:hidden;border-radius:22px}
+.testi-track{display:flex;transition:transform .45s cubic-bezier(.23,1,.32,1)}
+.testi-slide{min-width:100%;padding:28px 24px}
+.testi-stars{font-size:1rem;margin-bottom:14px}
+.testi-q{font-size:.98rem;line-height:1.65;font-weight:500;font-style:italic}
+.testi-auth{display:flex;align-items:center;gap:12px;margin-top:22px}
+.testi-av{width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.18);display:grid;place-items:center;font-weight:700;font-size:1.1rem;flex-shrink:0}
+.testi-n{font-weight:700;font-size:.88rem}
+.testi-r{font-size:.73rem;opacity:.6;margin-top:2px}
+.testi-dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.testi-dots i{width:7px;height:7px;border-radius:50%;background:rgba(0,0,0,.15);cursor:pointer;transition:background .2s,transform .2s}
+.testi-dots i.on{background:#0A0A0A;transform:scale(1.3)}
+
+/* ── FAQ ── */
+.faq-list{display:flex;flex-direction:column;gap:8px}
+.faq-item{background:#fff;border:1.5px solid rgba(0,0,0,.08);border-radius:16px;overflow:hidden}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;font-weight:700;font-size:.9rem;gap:10px}
+.faq-q .plus{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.08);display:grid;place-items:center;transition:transform .25s}
+.faq-item.open .faq-q .plus{transform:rotate(45deg);background:var(--purple)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-a p{font-size:.83rem;opacity:.65;line-height:1.6;padding:0 18px 16px}
+
+/* ── CTA & FOOTER (shared look) ── */
+.cta-wrap{padding:10px var(--pad) 0}
+.cta-box{background:var(--black);color:#fff;border-radius:22px;padding:34px 24px 30px;text-align:center}
+.cta-box .c-label{display:inline-block;border:1.8px solid rgba(255,255,255,.2);color:var(--purple);border-radius:50px;padding:5px 14px;font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px}
+.cta-box h2{font-size:clamp(1.7rem,6vw,2.8rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:10px}
+.cta-box>p{font-size:.88rem;opacity:.45;line-height:1.65;margin-bottom:24px}
+.cta-inputs{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.cta-inputs input,.cta-inputs select{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.13);border-radius:50px;padding:13px 20px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.cta-inputs input::placeholder{color:rgba(255,255,255,.28)}
+.cta-inputs input:focus,.cta-inputs select:focus{border-color:var(--purple)}
+.cta-inputs select option{background:#111;color:#fff}
+.submit{width:100%;background:var(--purple);color:var(--black);border:none;border-radius:50px;padding:15px 24px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:filter .15s,transform .15s;margin-top:2px}
+.submit:hover{filter:brightness(1.1);transform:scale(1.02)}
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:18px}
+.trust span{font-size:.72rem;opacity:.32;display:flex;align-items:center;gap:4px}
+.trust span::before{content:'✓';color:var(--green);font-weight:700;opacity:1}
+.footer-wrap{margin:24px var(--pad) 20px;border-radius:22px;overflow:hidden}
+footer{background:var(--black);color:#fff;padding:32px 22px 24px}
+footer>p{font-size:.82rem;opacity:.32;line-height:1.7;max-width:280px;margin-top:8px}
+.footer-logo-txt{font-size:1.3rem;font-weight:700;letter-spacing:-.04em}
+.footer-logo-txt span{color:var(--purple)}
+.footer-links-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:20px 0}
+.footer-links-grid a{background:rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;font-size:.82rem;color:rgba(255,255,255,.45);text-decoration:none;font-weight:500;transition:background .18s,color .18s;display:flex;align-items:center;justify-content:space-between}
+.footer-links-grid a:hover{background:rgba(255,255,255,.12);color:#fff}
+.footer-links-grid a::after{content:'↗';font-size:.72rem;opacity:.38}
+.footer-bottom-bar{border-top:1px solid rgba(255,255,255,.07);padding:16px 0 4px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:8px}
+.footer-bottom-bar p{font-size:.72rem;opacity:.22}
+
+.reveal{opacity:0;transform:translateY(28px) scale(.98);transition:opacity .6s ease,transform .6s cubic-bezier(.23,1,.32,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media(min-width:640px){
+  .recap-grid{grid-template-columns:repeat(3,1fr)}
+  .why-grid{grid-template-columns:1fr 1fr}
+  .stats2{grid-template-columns:repeat(4,1fr)}
+  .prog2-grid{grid-template-columns:1fr 1fr}
+  .cmp-row{font-size:.84rem}
+}
+</style>
+</head>
+<body>
+<nav id="nav">
+  <a href="index.html" class="logo"><span class="logo-main">Rus<span>Study</span>.</span><span class="logo-sub">Études en Russie</span></a>
+  <div class="nav-r"><a href="index.html" class="pill-ghost" style="display:none" id="navBackDesktop">← Site</a><a href="#" class="pill-cta" onclick="openModal();return false">Postuler</a><button class="sq-btn" id="menuBtn"><svg viewBox="0 0 24 24"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button></div>
+</nav>
+<div class="mob-nav" id="mobNav">
+  <div class="mob-nav-top"><a href="index.html" class="logo" style="color:#0A0A0A"><span class="logo-main">Rus<span style="color:#A855F7">Study</span>.</span><span class="logo-sub">Études en Russie</span></a><button class="sq-btn" id="closeBtn"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
+  <a href="index.html" style="background:#0A0A0A;color:#fff"><span>← Retour au site principal</span><span>↗</span></a>
+  <a href="#tour" style="background:#2460E8;color:#fff"><span>🎬 La visite 3D</span><span>↗</span></a>
+  <a href="#programmes2" style="background:#F97316;color:#0A0A0A"><span>Programmes</span><span>↗</span></a>
+  <a href="#unis2" style="background:#22C55E;color:#0A0A0A"><span>Universités</span><span>↗</span></a>
+  <a href="#faq" style="background:#FBBB21;color:#0A0A0A"><span>FAQ</span><span>↗</span></a>
+  <a href="candidat.html" style="background:#A855F7;color:#0A0A0A"><span>Espace candidat (démo)</span><span>↗</span></a>
+  <a href="#" class="mob-apply" onclick="openModal();return false">Postuler maintenant →</a>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div class="intro reveal">
+  <div class="tag">Expérience immersive</div>
+  <h1>Traverse le site.<br>En <span>3D.</span></h1>
+  <p>Une vidéo interactive, pilotée par ton scroll : chaque page de RusStudy devient une étape de ton voyage vers la Russie. Avance, et regarde ton futur se construire devant toi.</p>
+  <div class="scroll-hint"><span>Scrolle pour commencer</span>
+    <svg width="20" height="20" viewBox="0 0 24 24" stroke="#0A0A0A" fill="none" stroke-width="2.4"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</div>
+
+<!-- ══ TOUR : SCROLL-DRIVEN 3D PARALLAX ENGINE ══ -->
+<section class="tour" id="tour">
+  <div class="tour-stage" id="tourStage">
+    <canvas id="tourBg"></canvas>
+    <canvas id="tourFx"></canvas>
+    <div class="tour-cam" id="tourCam">
+      <div class="tour-track" id="tourTrack">
+        <!-- panels injected as plain DOM, each mimics a real RusStudy page -->
+        <div class="tour-panel tp-bg-cream" data-i="0">
+          <div class="tp-fakebar"><span class="fb-logo">Rus<span style="color:#A855F7">Study</span>.</span><span class="fb-pill">Accueil</span></div>
+          <div class="tp-tag"><b>Page 01</b> · Accueil</div>
+          <h3>Étudie en Russie.<br>Change ta vie.</h3>
+          <p>Universités de rang mondial · Frais abordables · Accompagnement total.</p>
+          <div class="tp-stats"><div class="tp-stat"><b>1 200+</b><span>Étudiants</span></div><div class="tp-stat"><b>40+</b><span>Universités</span></div><div class="tp-stat"><b>10 ans</b><span>Expérience</span></div></div>
+        </div>
+        <div class="tour-panel tp-bg-blue" data-i="1">
+          <div class="tp-tag"><b>Page 02</b> · Pourquoi la Russie</div>
+          <h3>Diplômes reconnus dans 100+ pays.</h3>
+          <p>Validés en Europe, au Moyen-Orient et en Afrique — notamment en médecine et ingénierie.</p>
+          <div class="tp-chips"><span class="tp-chip">🌍 100+ pays</span><span class="tp-chip">🩺 OMS</span><span class="tp-chip">🎓 Top rang</span></div>
+        </div>
+        <div class="tour-panel tp-bg-split" data-i="2">
+          <div class="tp-tag"><b>Page 03</b> · Coûts & bourses</div>
+          <h3>Dès 2 200€/an.<br>Bourses d'état possibles.</h3>
+          <p>Parmi les frais les plus bas au monde pour un enseignement de haut rang.</p>
+          <div class="tp-mini-grid"><div class="tp-mini">💶 2 200€/an</div><div class="tp-mini">🏛️ Bourse d'état</div></div>
+        </div>
+        <div class="tour-panel tp-bg-purple" data-i="3">
+          <div class="tp-tag"><b>Page 04</b> · Comment ça marche</div>
+          <h3>5 étapes. Zéro stress.</h3>
+          <div class="tp-steps">
+            <div class="tp-step"><b>01</b> Consultation gratuite</div>
+            <div class="tp-step"><b>02</b> Préparation du dossier</div>
+            <div class="tp-step"><b>03</b> Admission universitaire</div>
+            <div class="tp-step"><b>04</b> Visa & assurance</div>
+            <div class="tp-step"><b>05</b> Accueil en Russie</div>
+          </div>
+        </div>
+        <div class="tour-panel tp-bg-orange" data-i="4">
+          <div class="tp-tag"><b>Page 05</b> · Programmes</div>
+          <h3>Choisis ta filière.</h3>
+          <div class="tp-mini-grid"><div class="tp-mini">🩺 Médecine</div><div class="tp-mini">⚙️ Ingénierie</div><div class="tp-mini">💊 Pharmacie</div><div class="tp-mini">💼 Business</div></div>
+        </div>
+        <div class="tour-panel tp-bg-green" data-i="5">
+          <div class="tp-tag"><b>Page 06</b> · Universités</div>
+          <h3>40+ universités partenaires.</h3>
+          <p>De Moscou à Saint-Pétersbourg, Kazan et Novossibirsk.</p>
+          <div class="tp-chips"><span class="tp-chip">Moscou</span><span class="tp-chip">Saint-Pétersbourg</span><span class="tp-chip">Kazan</span><span class="tp-chip">Novossibirsk</span></div>
+        </div>
+        <div class="tour-panel tp-bg-dark" data-i="6">
+          <div class="tp-fakebar"><span class="fb-logo">Rus<span style="color:#A855F7">Study.</span></span><span class="fb-pill" style="background:rgba(255,255,255,.1)">Mon dossier</span></div>
+          <div class="tp-tag"><b>Page 07</b> · Espace candidat</div>
+          <div class="tp-ring"><i>60%</i></div>
+          <h3 style="text-align:center;font-size:1.05rem">Admission en cours…</h3>
+          <p style="text-align:center">Suivi en temps réel, de Tunis à Moscou.</p>
+        </div>
+        <div class="tour-panel tp-bg-black" data-i="7">
+          <div class="tp-tag"><b>Page 08</b> · Commence maintenant</div>
+          <h3>Prêt à changer ta vie ?</h3>
+          <p>Ton dossier peut démarrer aujourd'hui. Consultation 100% gratuite.</p>
+          <button class="tp-cta-btn" onclick="openModal()">Commencer mon dossier →</button>
+        </div>
+      </div>
+    </div>
+    <div class="tour-vignette"></div>
+    <div class="scroll-prompt" id="scrollPrompt">↓ continue à scroller ↓</div>
+    <div class="tour-hud">
+      <div class="hud-left">
+        <div class="hud-idx" id="hudIdx">01 / 08</div>
+        <div class="hud-name" id="hudName">Accueil</div>
+        <div class="hud-track"><i id="hudFill"></i></div>
+      </div>
+      <div class="tour-dots" id="tourDots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ RECAP : retrouver les vraies pages ══ -->
+<div class="recap">
+  <div class="sec-head reveal"><div class="sec-label">Et en vrai ?</div><h2>Visite les vraies pages.</h2><p>Tu viens de traverser une reconstitution en 3D. Voici les vraies pages du site, prêtes à l'emploi.</p></div>
+  <div class="recap-grid">
+    <a href="index.html" class="recap-card bg-blue reveal"><div><div class="ic">🏠</div><h4>Site principal</h4><p>L'accueil complet de RusStudy</p></div><div class="go"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div></a>
+    <a href="candidat.html" class="recap-card bg-purple reveal"><div><div class="ic">📋</div><h4>Espace candidat</h4><p>Démo du suivi de dossier</p></div><div class="go"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div></a>
+    <a href="admin.html" class="recap-card bg-yellow reveal"><div><div class="ic">🗂️</div><h4>Espace conseiller</h4><p>Démo du dashboard admin</p></div><div class="go"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div></a>
+  </div>
+</div>
+
+<!-- ══ POURQUOI — grille étendue ══ -->
+<div class="sec" id="pourquoi2">
+  <div class="sec-head reveal"><div class="sec-label">Pourquoi nous choisir</div><h2>6 raisons de partir avec nous.</h2></div>
+  <div class="why-grid">
+    <div class="why-card bg-blue reveal"><div class="why-ic">🎓</div><h3>Diplômes reconnus</h3><p>Validés dans 100+ pays, y compris en Europe et au Moyen-Orient.</p></div>
+    <div class="why-card bg-yellow reveal"><div class="why-ic">💶</div><h3>Coût maîtrisé</h3><p>Dès 2 200€/an — parmi les moins chers au monde pour ce niveau.</p></div>
+    <div class="why-card bg-orange reveal"><div class="why-ic">🏛️</div><h3>Bourses d'état</h3><p>Quotas réservés aux Tunisiens chaque année, accompagnement inclus.</p></div>
+    <div class="why-card bg-green reveal"><div class="why-ic">🤝</div><h3>Communauté</h3><p>3 000 Tunisiens déjà sur place pour t'accueillir et t'orienter.</p></div>
+    <div class="why-card bg-purple reveal"><div class="why-ic">💬</div><h3>Support 24/7</h3><p>Une équipe disponible à toute heure, de Tunis à Moscou.</p></div>
+    <div class="why-card bg-cream reveal"><div class="why-ic">🏠</div><h3>Logement garanti</h3><p>Résidence universitaire réservée avant ton arrivée. Zéro stress.</p></div>
+  </div>
+  <div class="cmp-wrap reveal">
+    <div class="cmp-row head"><div>Comparatif</div><div>Russie 🇷🇺</div><div>Europe de l'Ouest</div></div>
+    <div class="cmp-row"><div>Coût médecine/an</div><div><b>2 200–3 500€</b></div><div>8 000–15 000€</div></div>
+    <div class="cmp-row"><div>Délai d'admission</div><div><b>2–4 semaines</b></div><div>3–6 mois</div></div>
+    <div class="cmp-row"><div>Bourses tunisiennes</div><div><b>Disponibles</b></div><div>Très rares</div></div>
+  </div>
+</div>
+
+<!-- ══ STATS ══ -->
+<div class="sec" style="padding-top:30px">
+  <div class="stats2 reveal" id="statsCount">
+    <div class="stat2"><div class="stat2-n" data-target="1200" data-suffix="+">0</div><div class="stat2-l">Étudiants placés</div></div>
+    <div class="stat2"><div class="stat2-n" data-target="40" data-suffix="+">0</div><div class="stat2-l">Universités</div></div>
+    <div class="stat2"><div class="stat2-n" data-target="10" data-suffix=" ans">0</div><div class="stat2-l">Expérience</div></div>
+    <div class="stat2"><div class="stat2-n" data-target="96" data-suffix="%">0</div><div class="stat2-l">Taux d'admission</div></div>
+  </div>
+</div>
+
+<!-- ══ PROCESSUS détaillé (7 étapes) ══ -->
+<div class="sec" id="processus2">
+  <div class="sec-head reveal"><div class="sec-label">Le parcours complet</div><h2>7 étapes, de Tunis à ton campus.</h2></div>
+  <div class="proc2">
+    <div class="proc2-item reveal"><div class="proc2-num" style="background:#2460E8">01</div><div class="proc2-body"><h4>Consultation gratuite</h4><p>Évaluation de ton profil, orientation filière et université.</p><span class="proc2-meta">Jour 1</span></div></div>
+    <div class="proc2-item reveal"><div class="proc2-num" style="background:#A855F7">02</div><div class="proc2-body"><h4>Choix université & filière</h4><p>Sélection parmi 40+ universités selon ton budget et ton niveau.</p><span class="proc2-meta">Jour 2–3</span></div></div>
+    <div class="proc2-item reveal"><div class="proc2-num" style="background:#FBBB21">03</div><div class="proc2-body"><h4>Préparation du dossier</h4><p>Traduction, légalisation et compilation de tes documents.</p><span class="proc2-meta">Semaine 1–2</span></div></div>
+    <div class="proc2-item reveal"><div class="proc2-num" style="background:#F97316">04</div><div class="proc2-body"><h4>Dépôt & admission</h4><p>Soumission directe auprès de l'université avec suivi en temps réel.</p><span class="proc2-meta">Semaine 2–4</span></div></div>
+    <div class="proc2-item reveal"><div class="proc2-num" style="background:#22C55E">05</div><div class="proc2-body"><h4>Demande de bourse</h4><p>Constitution du dossier de bourse d'état si tu es éligible.</p><span class="proc2-meta">En parallèle</span></div></div>
+    <div class="proc2-item reveal"><div class="proc2-num" style="background:#EF4444">06</div><div class="proc2-body"><h4>Visa & assurance</h4><p>Assistance complète pour ton visa étudiant et ta couverture médicale.</p><span class="proc2-meta">Semaine 5–7</span></div></div>
+    <div class="proc2-item reveal"><div class="proc2-num" style="background:#0A0A0A">07</div><div class="proc2-body"><h4>Départ & accueil</h4><p>Transfert aéroport, installation campus, intégration communauté.</p><span class="proc2-meta">Jour J</span></div></div>
+  </div>
+</div>
+
+<!-- ══ PROGRAMMES — catalogue filtrable ══ -->
+<div class="sec" id="programmes2">
+  <div class="sec-head reveal"><div class="sec-label">Catalogue complet</div><h2>8 filières. Un avenir.</h2></div>
+  <div class="prog-pills reveal" id="progPills">
+    <button class="prog-pill active" data-f="tout">Tout</button>
+    <button class="prog-pill" data-f="medecine">Médecine</button>
+    <button class="prog-pill" data-f="ingenierie">Ingénierie</button>
+    <button class="prog-pill" data-f="business">Business</button>
+    <button class="prog-pill" data-f="autres">Autres</button>
+  </div>
+  <div class="prog2-grid" id="progGrid">
+    <div class="prog2-card bg-blue reveal" data-f="medecine"><div class="prog2-top"><h4>Médecine Générale</h4><span class="prog2-tag">⭐ Très demandé</span></div><div class="prog2-meta"><span>6 ans</span><span>3 500€/an</span></div><p>Diplôme reconnu par l'OMS, labos et cliniques intégrées.</p></div>
+    <div class="prog2-card bg-orange reveal" data-f="ingenierie"><div class="prog2-top"><h4>Ingénierie & Tech</h4><span class="prog2-tag">5 ans</span></div><div class="prog2-meta"><span>5 ans</span><span>2 800€/an</span></div><p>Génie civil, mécanique, informatique — recherche de pointe.</p></div>
+    <div class="prog2-card bg-yellow reveal" data-f="medecine"><div class="prog2-top"><h4>Pharmacie & Dentaire</h4><span class="prog2-tag">5 ans</span></div><div class="prog2-meta"><span>5 ans</span><span>3 200€/an</span></div><p>Formations reconnues MENA, stages cliniques intégrés.</p></div>
+    <div class="prog2-card bg-purple reveal" data-f="business"><div class="prog2-top"><h4>Économie & Business</h4><span class="prog2-tag">MBA</span></div><div class="prog2-meta"><span>4-5 ans</span><span>2 200€/an</span></div><p>Finance internationale et commerce, reconnus partout.</p></div>
+    <div class="prog2-card bg-green reveal" data-f="autres"><div class="prog2-top"><h4>Droit International</h4><span class="prog2-tag">5 ans</span></div><div class="prog2-meta"><span>5 ans</span><span>2 400€/an</span></div><p>Droit comparé et international, partenariats juridiques.</p></div>
+    <div class="prog2-card bg-cream reveal" data-f="autres"><div class="prog2-top"><h4>Architecture</h4><span class="prog2-tag">5-6 ans</span></div><div class="prog2-meta"><span>5-6 ans</span><span>2 600€/an</span></div><p>Ateliers de conception, écoles centenaires.</p></div>
+    <div class="prog2-card bg-blue reveal" data-f="ingenierie"><div class="prog2-top"><h4>Informatique</h4><span class="prog2-tag">🔥 Demandé</span></div><div class="prog2-meta"><span>4 ans</span><span>2 500€/an</span></div><p>IA, cybersécurité, dev — débouchés internationaux.</p></div>
+    <div class="prog2-card bg-orange reveal" data-f="business"><div class="prog2-top"><h4>Relations Internationales</h4><span class="prog2-tag">4 ans</span></div><div class="prog2-meta"><span>4 ans</span><span>2 300€/an</span></div><p>Diplomatie, ONG, organisations internationales.</p></div>
+  </div>
+</div>
+
+<!-- ══ UNIVERSITÉS — tabs par ville ══ -->
+<div class="sec" id="unis2">
+  <div class="sec-head reveal"><div class="sec-label">Partenaires</div><h2>Choisis ta ville.</h2></div>
+  <div class="uni-tabs reveal" id="uniTabs">
+    <button class="uni-tab active" data-c="moscou">Moscou</button>
+    <button class="uni-tab" data-c="spb">Saint-Pétersbourg</button>
+    <button class="uni-tab" data-c="kazan">Kazan</button>
+    <button class="uni-tab" data-c="novo">Novossibirsk</button>
+  </div>
+  <div class="uni-panel active reveal" data-c="moscou">
+    <div class="uni2-card"><div><h5>Université d'État de Moscou</h5><span>Généraliste · Recherche</span></div><span class="badge">TOP 100</span></div>
+    <div class="uni2-card"><div><h5>Université Pirogov</h5><span>Médecine · Fondée 1906</span></div><span class="badge">Médecine</span></div>
+    <div class="uni2-card"><div><h5>Université Bauman</h5><span>Ingénierie · Tech</span></div><span class="badge">Top Ingé</span></div>
+    <div class="uni2-card"><div><h5>Université RUDN</h5><span>120+ nationalités</span></div><span class="badge">Internationale</span></div>
+  </div>
+  <div class="uni-panel" data-c="spb">
+    <div class="uni2-card"><div><h5>Polytechnique de Saint-Pétersbourg</h5><span>Ingénierie · Sciences</span></div><span class="badge">Top Ingé</span></div>
+    <div class="uni2-card"><div><h5>Institut Stroganov</h5><span>Architecture · Design</span></div><span class="badge">Design</span></div>
+  </div>
+  <div class="uni-panel" data-c="kazan">
+    <div class="uni2-card"><div><h5>Université de Kazan</h5><span>Médecine · Sciences</span></div><span class="badge">Médecine</span></div>
+  </div>
+  <div class="uni-panel" data-c="novo">
+    <div class="uni2-card"><div><h5>Université d'État de Novossibirsk</h5><span>Sciences · Recherche</span></div><span class="badge">Recherche</span></div>
+  </div>
+</div>
+
+<!-- ══ TÉMOIGNAGES — carousel ══ -->
+<div class="sec" id="temoignages2">
+  <div class="sec-head reveal"><div class="sec-label">Ils l'ont fait</div><h2>Leur parcours, leurs mots.</h2></div>
+  <div class="testi-carousel reveal">
+    <div class="testi-track" id="testiTrack">
+      <div class="testi-slide bg-blue"><div class="testi-stars">★★★★★</div><p class="testi-q">"RusStudy a tout géré pour moi — du choix de l'université jusqu'à mon accueil à l'aéroport. Je suis en 3ème année de médecine à Moscou."</p><div class="testi-auth"><div class="testi-av">A</div><div><div class="testi-n">Ayoub Mansouri</div><div class="testi-r">Médecine — Moscou, 3ème année</div></div></div></div>
+      <div class="testi-slide bg-orange"><div class="testi-stars">★★★★★</div><p class="testi-q">"L'équipe m'a orienté vers une université avec des cours en anglais. Adaptation rapide grâce au suivi WhatsApp constant."</p><div class="testi-auth"><div class="testi-av">S</div><div><div class="testi-n">Sarra Belhadj</div><div class="testi-r">Ingénierie — Saint-Pétersbourg</div></div></div></div>
+      <div class="testi-slide bg-green"><div class="testi-stars">★★★★★</div><p class="testi-q">"Bourse gouvernementale obtenue grâce à leur accompagnement ! Je ne paie que le logement."</p><div class="testi-auth"><div class="testi-av">M</div><div><div class="testi-n">Mohamed Khlifi</div><div class="testi-r">Pharmacie — Kazan, Boursier d'état</div></div></div></div>
+      <div class="testi-slide bg-purple"><div class="testi-stars">★★★★★</div><p class="testi-q">"Le dossier visa était mon plus gros stress. Ils ont tout pris en charge, je n'ai eu qu'à signer."</p><div class="testi-auth"><div class="testi-av">Y</div><div><div class="testi-n">Yasmine Trabelsi</div><div class="testi-r">Droit International — Moscou</div></div></div></div>
+      <div class="testi-slide bg-cream"><div class="testi-stars">★★★★★</div><p class="testi-q">"Le logement était réservé avant même mon arrivée. Zéro stress à l'atterrissage, comme promis."</p><div class="testi-auth"><div class="testi-av">K</div><div><div class="testi-n">Karim Jaziri</div><div class="testi-r">Informatique — Novossibirsk</div></div></div></div>
+    </div>
+  </div>
+  <div class="testi-dots" id="testiDots"></div>
+</div>
+
+<!-- ══ FAQ ══ -->
+<div class="sec" id="faq">
+  <div class="sec-head reveal"><div class="sec-label">Questions fréquentes</div><h2>Tout ce que tu veux savoir.</h2></div>
+  <div class="faq-list reveal">
+    <div class="faq-item"><div class="faq-q">Le visa étudiant est-il garanti ? <div class="plus">+</div></div><div class="faq-a"><p>Nous t'accompagnons à chaque étape du dossier visa. Le taux d'obtention de nos candidats dépasse 96% lorsque le dossier est complet et soumis dans les délais.</p></div></div>
+    <div class="faq-item"><div class="faq-q">Les cours sont-ils en anglais ou en russe ? <div class="plus">+</div></div><div class="faq-a"><p>De nombreux programmes proposent des cours en anglais, notamment en médecine et ingénierie. Une année préparatoire de russe est aussi disponible si besoin.</p></div></div>
+    <div class="faq-item"><div class="faq-q">Comment fonctionne la bourse d'état ? <div class="plus">+</div></div><div class="faq-a"><p>Des quotas annuels sont réservés aux étudiants tunisiens. Nous constituons ton dossier de bourse en parallèle de ta candidature universitaire.</p></div></div>
+    <div class="faq-item"><div class="faq-q">Le logement est-il inclus ? <div class="plus">+</div></div><div class="faq-a"><p>Les résidences universitaires sont réservées en avance, dès la confirmation de ton admission. Compte environ 100–200€/mois selon la ville.</p></div></div>
+    <div class="faq-item"><div class="faq-q">Est-ce que la Russie est sûre pour les étudiants étrangers ? <div class="plus">+</div></div><div class="faq-a"><p>Les villes universitaires accueillent des milliers d'étudiants internationaux chaque année. Une communauté tunisienne active t'aide à t'intégrer dès ton arrivée.</p></div></div>
+    <div class="faq-item"><div class="faq-q">Mon diplôme sera-t-il reconnu en Tunisie ? <div class="plus">+</div></div><div class="faq-a"><p>Les diplômes des universités partenaires sont reconnus dans plus de 100 pays, dont la Tunisie, sous réserve des procédures d'équivalence classiques.</p></div></div>
+    <div class="faq-item"><div class="faq-q">Quel est le coût de la vie sur place ? <div class="plus">+</div></div><div class="faq-a"><p>En moyenne 250–400€/mois logement compris, selon la ville. Moscou et Saint-Pétersbourg sont un peu plus chères que Kazan ou Novossibirsk.</p></div></div>
+    <div class="faq-item"><div class="faq-q">Comment je commence ma candidature ? <div class="plus">+</div></div><div class="faq-a"><p>Clique sur "Postuler", remplis le formulaire rapide (30 secondes), et un conseiller te contacte sous 24h pour la suite.</p></div></div>
+  </div>
+</div>
+
+<!-- ══ CTA FINAL (reuse modal/inline form) ══ -->
+<div id="contact2" class="cta-wrap reveal">
+  <div class="cta-box">
+    <div class="c-label">Postuler</div><h2>Prêt à changer ta vie ?</h2>
+    <p>Consultation 100% gratuite. Un conseiller te contacte sous 24h.</p>
+    <div class="cta-inputs">
+      <input type="text" placeholder="Prénom et nom" id="inline_name"/>
+      <input type="tel" placeholder="Numéro WhatsApp" id="inline_phone"/>
+      <select id="inline_filiere"><option value="">Filière souhaitée</option><option>Médecine Générale</option><option>Pharmacie / Dentaire</option><option>Ingénierie</option><option>Économie / Management</option><option>Droit International</option><option>Architecture</option><option>Informatique</option><option>Autre</option></select>
+      <button class="submit" onclick="submitInlineForm(this)">Envoyer ma candidature →</button>
+    </div>
+    <div class="trust"><span>Consultation gratuite</span><span>Réponse sous 24h</span><span>Sans engagement</span></div>
+  </div>
+</div>
+
+<div class="footer-wrap reveal">
+  <footer>
+    <div class="footer-logo-txt">Rus<span>Study</span>.</div>
+    <p>Depuis 2015, nous accompagnons les étudiants tunisiens vers les meilleures universités russes.</p>
+    <div class="footer-links-grid">
+      <a href="index.html">Site principal</a><a href="#tour">Visite 3D</a>
+      <a href="candidat.html">Espace candidat</a><a href="admin.html">Espace conseiller</a>
+      <a href="tel:+79964334489">+7 996 433 4489</a><a href="mailto:contact@russieeetudes.com">contact@russieeetudes.com</a>
+    </div>
+    <div class="footer-bottom-bar"><p>© 2025 RusStudy — Tous droits réservés.</p></div>
+  </footer>
+</div>
+
+<script>
+/* ══ NAV ══ */
+document.getElementById('menuBtn').onclick=()=>{document.getElementById('mobNav').classList.add('open');document.body.style.overflow='hidden'};
+document.getElementById('closeBtn').onclick=close2;document.getElementById('mobNav').querySelectorAll('a').forEach(a=>a.onclick=close2);
+function close2(){document.getElementById('mobNav').classList.remove('open');document.body.style.overflow=''}
+window.addEventListener('scroll',()=>{document.getElementById('nav').style.borderBottom=window.scrollY>8?'1px solid rgba(0,0,0,0.08)':'none'});
+
+/* ══ REVEAL ON SCROLL ══ */
+const rObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+/* ══ TILT ON HOVER (why cards / recap / prog cards) ══ */
+if(window.matchMedia('(pointer:fine)').matches){
+  document.querySelectorAll('.why-card,.prog2-card').forEach(el=>{
+    el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(600px) rotateY(${x*8}deg) rotateX(${-y*6}deg) scale(1.02)`});
+    el.addEventListener('mouseleave',()=>el.style.transform='');
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   TOUR ENGINE — scroll-driven 3D parallax flythrough
+   ════════════════════════════════════════════════════════ */
+(function(){
+  const tourEl=document.getElementById('tour');
+  const camEl=document.getElementById('tourCam');
+  const trackEl=document.getElementById('tourTrack');
+  const panels=Array.from(trackEl.querySelectorAll('.tour-panel'));
+  const N=panels.length;
+  const STEP=1300, DEPTH=STEP*(N-1);
+  const names=['Accueil','Pourquoi la Russie','Coûts & bourses','Comment ça marche','Programmes','Universités','Mon dossier','Commence maintenant'];
+
+  // place panels along Z + build dots
+  panels.forEach((p,i)=>{ p.style.transform=`translate(-50%,-50%) translateZ(${-i*STEP}px)`; });
+  const dotsWrap=document.getElementById('tourDots');
+  panels.forEach((_,i)=>{const d=document.createElement('i');if(i===0)d.classList.add('on');dotsWrap.appendChild(d)});
+  const dotEls=Array.from(dotsWrap.children);
+
+  const hudIdx=document.getElementById('hudIdx'), hudName=document.getElementById('hudName'), hudFill=document.getElementById('hudFill'), scrollPrompt=document.getElementById('scrollPrompt');
+
+  let running=false, lastY=window.scrollY, velocity=0;
+
+  function render(){
+    const rect=tourEl.getBoundingClientRect();
+    const total=tourEl.offsetHeight-window.innerHeight;
+    const progress=Math.min(1,Math.max(0,-rect.top/Math.max(1,total)));
+
+    trackEl.style.transform=`translateZ(${progress*DEPTH}px)`;
+
+    panels.forEach((p,i)=>{
+      const z=progress*DEPTH-i*STEP;
+      const a=Math.max(0,1-Math.abs(z)/(STEP*0.92));
+      p.style.opacity=a;
+      p.style.filter=`blur(${(1-a)*6}px)`;
+      p.style.pointerEvents=a>0.6?'auto':'none';
+    });
+
+    const idx=Math.min(N-1,Math.round(progress*(N-1)));
+    hudIdx.textContent=String(idx+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+    hudName.textContent=names[idx];
+    hudFill.style.width=(progress*100)+'%';
+    dotEls.forEach((d,i)=>d.classList.toggle('on',i===idx));
+    scrollPrompt.style.opacity=progress<0.03?0.55:0;
+  }
+
+  function loop(){
+    render();
+    const y=window.scrollY; velocity=velocity*0.85+(y-lastY)*0.15; lastY=y;
+    drawFx(velocity);
+    if(running) requestAnimationFrame(loop);
+  }
+
+  const tourObs=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting && !running){running=true;requestAnimationFrame(loop);}
+    else if(!e.isIntersecting){running=false;}
+  }),{threshold:0});
+  tourObs.observe(tourEl);
+  render();
+
+  /* desktop mouse parallax tilt on the camera */
+  if(window.matchMedia('(pointer:fine)').matches){
+    document.getElementById('tourStage').addEventListener('mousemove',e=>{
+      const r=e.currentTarget.getBoundingClientRect();
+      const mx=(e.clientX-r.left)/r.width-.5, my=(e.clientY-r.top)/r.height-.5;
+      camEl.style.transform=`rotateY(${mx*3}deg) rotateX(${-my*2.4}deg)`;
+    });
+  }
+
+  /* ── parallax starfield background (2 depth layers) ── */
+  const bg=document.getElementById('tourBg'); const bgx=bg.getContext('2d');
+  let stars=[];
+  function resizeBg(){
+    bg.width=window.innerWidth*devicePixelRatio; bg.height=window.innerHeight*devicePixelRatio;
+    bg.style.width=window.innerWidth+'px'; bg.style.height=window.innerHeight+'px';
+    stars=[]; const count=140;
+    for(let i=0;i<count;i++){
+      stars.push({x:Math.random(),y:Math.random(),layer:i%2,r:.6+Math.random()*1.8,tw:Math.random()*Math.PI*2});
+    }
+  }
+  resizeBg(); window.addEventListener('resize',resizeBg);
+  let t0=performance.now();
+  function drawBg(){
+    const rect=tourEl.getBoundingClientRect();
+    const total=tourEl.offsetHeight-window.innerHeight;
+    const progress=Math.min(1,Math.max(0,-rect.top/Math.max(1,total)));
+    const W=bg.width,H=bg.height,t=(performance.now()-t0)*.001;
+    bgx.fillStyle='#05050d'; bgx.fillRect(0,0,W,H);
+    stars.forEach(s=>{
+      const speed=s.layer===0?60:160;
+      const offset=(progress*speed)%1;
+      const yy=((s.y+offset)%1)*H;
+      const alpha=.35+.45*Math.sin(t*2+s.tw);
+      bgx.globalAlpha=Math.max(.1,alpha);
+      bgx.fillStyle=s.layer===0?'#6b7fff':'#fff';
+      bgx.beginPath(); bgx.arc(s.x*W,yy,s.r*devicePixelRatio,0,Math.PI*2); bgx.fill();
+    });
+    bgx.globalAlpha=1;
+    requestAnimationFrame(()=>{ if(running) drawBg(); else requestAnimationFrame(drawBg); });
+  }
+  drawBg();
+
+  /* ── speed-line motion overlay, reacts to scroll velocity ── */
+  const fx=document.getElementById('tourFx'); const fxx=fx.getContext('2d');
+  let lines=[];
+  function resizeFx(){ fx.width=window.innerWidth*devicePixelRatio; fx.height=window.innerHeight*devicePixelRatio; fx.style.width=window.innerWidth+'px'; fx.style.height=window.innerHeight+'px'; }
+  resizeFx(); window.addEventListener('resize',resizeFx);
+  function drawFx(vel){
+    const W=fx.width,H=fx.height,cx=W/2,cy=H/2;
+    fxx.fillStyle='rgba(5,5,13,0.22)'; fxx.fillRect(0,0,W,H);
+    const speed=Math.min(40,Math.abs(vel));
+    if(speed>2 && lines.length<60){
+      for(let i=0;i<3;i++) lines.push({a:Math.random()*Math.PI*2,d:Math.random()*40,life:1});
+    }
+    lines=lines.filter(l=>l.life>0.02);
+    lines.forEach(l=>{
+      l.d+=speed*6; l.life*=0.93;
+      const x1=cx+Math.cos(l.a)*l.d, y1=cy+Math.sin(l.a)*l.d;
+      const x2=cx+Math.cos(l.a)*(l.d+speed*8), y2=cy+Math.sin(l.a)*(l.d+speed*8);
+      fxx.strokeStyle=`rgba(168,85,247,${l.life*.5})`; fxx.lineWidth=2*devicePixelRatio;
+      fxx.beginPath(); fxx.moveTo(x1,y1); fxx.lineTo(x2,y2); fxx.stroke();
+    });
+  }
+})();
+
+/* ════════════════ STATS COUNT-UP ════════════════ */
+(function(){
+  const wrap=document.getElementById('statsCount');
+  let done=false;
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting && !done){
+      done=true;
+      wrap.querySelectorAll('.stat2-n').forEach(el=>{
+        const target=parseInt(el.dataset.target,10), suffix=el.dataset.suffix||'';
+        const start=performance.now(), dur=1100;
+        function step(now){
+          const p=Math.min(1,(now-start)/dur);
+          el.textContent=Math.round(target*(1-Math.pow(1-p,3)))+suffix;
+          if(p<1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+  }),{threshold:.4});
+  obs.observe(wrap);
+})();
+
+/* ════════════════ PROGRAMMES FILTER ════════════════ */
+(function(){
+  const pills=document.querySelectorAll('#progPills .prog-pill');
+  const cards=document.querySelectorAll('#progGrid .prog2-card');
+  pills.forEach(p=>p.addEventListener('click',()=>{
+    pills.forEach(x=>x.classList.remove('active')); p.classList.add('active');
+    const f=p.dataset.f;
+    cards.forEach(c=>c.style.display=(f==='tout'||c.dataset.f===f)?'':'none');
+  }));
+})();
+
+/* ════════════════ UNIVERSITY TABS ════════════════ */
+(function(){
+  const tabs=document.querySelectorAll('#uniTabs .uni-tab');
+  const panels=document.querySelectorAll('.uni-panel');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active');
+    panels.forEach(p=>p.classList.toggle('active',p.dataset.c===t.dataset.c));
+  }));
+})();
+
+/* ════════════════ TESTIMONIAL CAROUSEL ════════════════ */
+(function(){
+  const track=document.getElementById('testiTrack');
+  const slides=track.children.length;
+  const dotsWrap=document.getElementById('testiDots');
+  let idx=0;
+  for(let i=0;i<slides;i++){const d=document.createElement('i');if(i===0)d.classList.add('on');d.onclick=()=>go(i);dotsWrap.appendChild(d)}
+  const dots=Array.from(dotsWrap.children);
+  function go(i){idx=(i+slides)%slides;track.style.transform=`translateX(${-idx*100}%)`;dots.forEach((d,j)=>d.classList.toggle('on',j===idx))}
+  let timer=setInterval(()=>go(idx+1),5000);
+  track.parentElement.addEventListener('mouseenter',()=>clearInterval(timer));
+  track.parentElement.addEventListener('mouseleave',()=>timer=setInterval(()=>go(idx+1),5000));
+  // touch swipe
+  let sx=0;
+  track.parentElement.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  track.parentElement.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(dx>40) go(idx-1); else if(dx<-40) go(idx+1);
+  },{passive:true});
+})();
+
+/* ════════════════ FAQ ACCORDION ════════════════ */
+document.querySelectorAll('.faq-item').forEach(item=>{
+  const q=item.querySelector('.faq-q'), a=item.querySelector('.faq-a');
+  q.addEventListener('click',()=>{
+    const open=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(o=>{o.classList.remove('open');o.querySelector('.faq-a').style.maxHeight=null});
+    if(!open){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px'}
+  });
+});
+</script>
+<script src="modal.js"></script>
+</body>
+</html>

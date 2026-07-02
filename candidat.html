@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>RusStudy. — Mon Dossier</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Space Grotesk',sans-serif;background:#0D0D0D;color:#fff;overflow-x:hidden;min-height:100svh}
+:root{
+  --bg:#0D0D0D;--surface:#181818;--surface2:#222;
+  --blue:#2460E8;--orange:#F97316;--yellow:#FBBB21;
+  --green:#22C55E;--purple:#A855F7;--red:#EF4444;
+  --cream:#F0EBE3;--white:#fff;--pad:16px;
+}
+
+/* ── APP SHELL ── */
+.app{display:flex;flex-direction:column;min-height:100svh;max-width:480px;margin:0 auto;position:relative}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  padding:16px var(--pad) 12px;
+  background:var(--bg);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.topbar-logo{font-size:1.2rem;font-weight:700;letter-spacing:-.04em;text-decoration:none;color:#fff}
+.topbar-logo span{color:var(--purple)}
+.notif-btn{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:none;cursor:pointer;display:grid;place-items:center;position:relative}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid var(--bg)}
+.notif-btn svg{stroke:#fff;fill:none;width:18px;height:18px;stroke-width:2}
+
+/* ── HERO CARD ── */
+.hero-card{
+  margin:16px var(--pad);
+  border-radius:24px;overflow:hidden;position:relative;
+}
+#heroMini{width:100%;height:180px;display:block}
+.hero-card-overlay{
+  position:absolute;inset:0;padding:20px;
+  background:linear-gradient(135deg,rgba(36,96,232,.85),rgba(168,85,247,.7));
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.hco-top{display:flex;align-items:center;justify-content:space-between}
+.candidate-name{font-size:1.25rem;font-weight:700;letter-spacing:-.02em}
+.candidate-id{font-size:.72rem;opacity:.6;margin-top:2px;letter-spacing:.08em}
+.status-badge{
+  background:rgba(255,255,255,.15);backdrop-filter:blur(8px);
+  border-radius:50px;padding:6px 14px;font-size:.75rem;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.progress-bar-wrap{margin-top:16px}
+.progress-label{font-size:.7rem;opacity:.65;margin-bottom:6px;display:flex;justify-content:space-between}
+.progress-track{height:6px;background:rgba(255,255,255,.2);border-radius:50px;overflow:hidden}
+.progress-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,#FBBB21,#22C55E);transition:width 1s ease}
+
+/* ── STEPS TIMELINE ── */
+.section{padding:0 var(--pad);margin-bottom:20px}
+.section-title{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.35;margin-bottom:12px}
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;position:relative}
+.tl-left{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0}
+.tl-node{
+  width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;flex-shrink:0;
+  font-size:.8rem;font-weight:700;z-index:1;
+}
+.tl-node.done{background:var(--green);color:#000}
+.tl-node.active{background:var(--yellow);color:#000;animation:nodeGlow 2s infinite}
+@keyframes nodeGlow{0%,100%{box-shadow:0 0 0 0 rgba(251,187,33,.4)}50%{box-shadow:0 0 0 8px rgba(251,187,33,0)}}
+.tl-node.pending{background:var(--surface2);color:rgba(255,255,255,.3)}
+.tl-line{flex:1;width:2px;background:var(--surface2);margin:2px 0}
+.tl-line.done{background:var(--green)}
+.tl-body{padding:4px 0 24px;flex:1}
+.tl-title{font-size:.95rem;font-weight:700;margin-bottom:4px}
+.tl-desc{font-size:.8rem;opacity:.5;line-height:1.5}
+.tl-date{font-size:.7rem;color:var(--yellow);font-weight:600;margin-top:6px}
+.tl-action{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:10px;background:var(--surface2);
+  border-radius:50px;padding:8px 14px;
+  font-size:.78rem;font-weight:600;color:#fff;
+  border:none;cursor:pointer;transition:background .18s;text-decoration:none;
+}
+.tl-action:hover{background:var(--blue)}
+.tl-action svg{stroke:currentColor;fill:none;width:12px;height:12px;stroke-width:2.5}
+
+/* ── DOCS CARD ── */
+.docs-card{
+  background:var(--surface);border-radius:20px;overflow:hidden;
+}
+.doc-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);
+  transition:background .15s;
+}
+.doc-item:last-child{border-bottom:none}
+.doc-item:hover{background:var(--surface2)}
+.doc-icon{
+  width:38px;height:38px;border-radius:10px;
+  display:grid;place-items:center;font-size:.9rem;flex-shrink:0;
+}
+.doc-info{flex:1}
+.doc-name{font-size:.875rem;font-weight:600}
+.doc-status{font-size:.72rem;margin-top:2px}
+.doc-action{
+  width:32px;height:32px;border-radius:50%;border:none;
+  display:grid;place-items:center;cursor:pointer;background:var(--surface2);
+  transition:background .15s;
+}
+.doc-action:hover{background:var(--blue)}
+.doc-action svg{stroke:#fff;fill:none;width:14px;height:14px;stroke-width:2}
+
+/* ── MESSAGES ── */
+.msg-list{display:flex;flex-direction:column;gap:8px}
+.msg-item{
+  background:var(--surface);border-radius:16px;padding:14px 16px;
+  display:flex;gap:12px;align-items:flex-start;
+  transition:background .15s;cursor:pointer;
+}
+.msg-item:hover{background:var(--surface2)}
+.msg-item.unread{border-left:3px solid var(--purple)}
+.msg-avatar{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  display:grid;place-items:center;font-weight:700;font-size:.95rem;
+}
+.msg-body{flex:1}
+.msg-from{font-size:.83rem;font-weight:700}
+.msg-preview{font-size:.78rem;opacity:.5;margin-top:3px;line-height:1.4}
+.msg-time{font-size:.68rem;opacity:.35;white-space:nowrap;margin-top:2px}
+
+/* ── QUICK ACTIONS ── */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qa-btn{
+  background:var(--surface);border-radius:18px;padding:18px 16px;
+  border:none;cursor:pointer;text-align:left;
+  transition:transform .2s,background .2s;
+  display:flex;flex-direction:column;gap:10px;
+  text-decoration:none;
+}
+.qa-btn:hover{transform:scale(1.03);background:var(--surface2)}
+.qa-icon{
+  width:40px;height:40px;border-radius:12px;
+  display:grid;place-items:center;font-size:1.1rem;
+}
+.qa-label{font-size:.85rem;font-weight:700;color:#fff}
+.qa-sub{font-size:.72rem;opacity:.4;margin-top:2px}
+
+/* ── UNIVERSITY CARD ── */
+.uni-card{
+  background:var(--surface);border-radius:20px;overflow:hidden;
+}
+.uni-card-header{
+  padding:20px 16px 16px;
+  background:linear-gradient(135deg,var(--blue),#1040b0);
+  position:relative;overflow:hidden;
+}
+.uni-card-header::before{
+  content:'';position:absolute;top:-20px;right:-20px;
+  width:100px;height:100px;border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+.uni-name{font-size:1.1rem;font-weight:700;letter-spacing:-.02em}
+.uni-city{font-size:.78rem;opacity:.65;margin-top:3px}
+.uni-program{
+  display:inline-flex;margin-top:12px;
+  background:rgba(255,255,255,.15);border-radius:50px;
+  padding:5px 12px;font-size:.75rem;font-weight:600;
+}
+.uni-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:0 4px}
+.uni-stat{padding:14px 12px;text-align:center;border-right:1px solid rgba(255,255,255,.06)}
+.uni-stat:last-child{border-right:none}
+.uni-stat-n{font-size:1.1rem;font-weight:700;color:var(--yellow)}
+.uni-stat-l{font-size:.65rem;opacity:.4;text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:sticky;bottom:0;z-index:100;
+  background:var(--bg);border-top:1px solid rgba(255,255,255,.06);
+  display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0 max(8px,env(safe-area-inset-bottom));
+}
+.bnav-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:8px;border:none;background:none;cursor:pointer;
+  color:rgba(255,255,255,.35);transition:color .2s;text-decoration:none;
+}
+.bnav-item.active{color:var(--purple)}
+.bnav-item svg{stroke:currentColor;fill:none;width:22px;height:22px;stroke-width:2}
+.bnav-item span{font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:6px;padding:0 var(--pad);margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  background:var(--surface);border-radius:50px;
+  padding:8px 18px;font-size:.8rem;font-weight:700;
+  border:none;cursor:pointer;color:rgba(255,255,255,.4);
+  white-space:nowrap;transition:background .18s,color .18s;
+}
+.tab.active{background:var(--purple);color:#000}
+
+/* ── VIEWS ── */
+.view{display:none;flex-direction:column;gap:16px;padding-bottom:90px}
+.view.active{display:flex}
+
+/* ── NOTIFICATION DRAWER ── */
+.notif-drawer{
+  position:fixed;top:0;right:-100%;bottom:0;width:min(340px,100%);
+  background:var(--surface);z-index:200;
+  transition:right .3s cubic-bezier(.23,1,.32,1);
+  display:flex;flex-direction:column;
+  box-shadow:-20px 0 60px rgba(0,0,0,.5);
+}
+.notif-drawer.open{right:0}
+.notif-drawer-header{
+  padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.notif-drawer-header h3{font-size:1rem;font-weight:700}
+.close-drawer{background:var(--surface2);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:grid;place-items:center}
+.close-drawer svg{stroke:#fff;fill:none;width:16px;height:16px;stroke-width:2}
+.notif-list{flex:1;overflow-y:auto;padding:12px}
+.notif-item{
+  padding:14px;border-radius:14px;margin-bottom:8px;
+  background:var(--surface2);
+}
+.notif-item.new{border-left:3px solid var(--purple)}
+.notif-item p{font-size:.83rem;line-height:1.5}
+.notif-item time{font-size:.7rem;opacity:.4;display:block;margin-top:6px}
+
+/* ── CHAT VIEW ── */
+.chat-wrap{display:flex;flex-direction:column;gap:10px;padding:0 var(--pad)}
+.chat-bubble{max-width:82%;padding:12px 16px;border-radius:18px;font-size:.875rem;line-height:1.55}
+.chat-bubble.them{background:var(--surface2);border-bottom-left-radius:4px;align-self:flex-start}
+.chat-bubble.me{background:var(--blue);border-bottom-right-radius:4px;align-self:flex-end}
+.chat-bubble time{display:block;font-size:.65rem;opacity:.45;margin-top:6px;text-align:right}
+.chat-input-row{
+  position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
+  width:min(480px,100%);padding:10px var(--pad);
+  background:var(--bg);border-top:1px solid rgba(255,255,255,.06);
+  display:flex;gap:8px;
+}
+.chat-input{
+  flex:1;background:var(--surface2);border:none;border-radius:50px;
+  padding:12px 18px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.875rem;outline:none;
+}
+.chat-input::placeholder{color:rgba(255,255,255,.3)}
+.chat-send{
+  width:44px;height:44px;border-radius:50%;background:var(--purple);
+  border:none;cursor:pointer;display:grid;place-items:center;flex-shrink:0;
+}
+.chat-send svg{stroke:#000;fill:none;width:18px;height:18px;stroke-width:2.5}
+
+/* ── LOGIN SCREEN ── */
+.login-screen{
+  position:fixed;inset:0;z-index:500;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px;text-align:center;
+}
+.login-screen canvas{border-radius:16px;margin-bottom:32px}
+.login-logo{font-size:2rem;font-weight:700;letter-spacing:-.05em;margin-bottom:6px}
+.login-logo span{color:var(--purple)}
+.login-sub{font-size:.875rem;opacity:.45;margin-bottom:32px;line-height:1.5}
+.login-input{
+  width:100%;background:var(--surface2);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:50px;padding:14px 20px;color:#fff;
+  font-family:'Space Grotesk',sans-serif;font-size:.9rem;outline:none;
+  margin-bottom:10px;transition:border-color .2s;
+}
+.login-input:focus{border-color:var(--purple)}
+.login-input::placeholder{color:rgba(255,255,255,.3)}
+.login-btn{
+  width:100%;background:var(--purple);color:#000;
+  border:none;border-radius:50px;padding:15px;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;
+  cursor:pointer;transition:filter .15s;margin-top:4px;
+}
+.login-btn:hover{filter:brightness(1.1)}
+.login-hint{font-size:.75rem;opacity:.35;margin-top:16px}
+
+/* ── FLOATING PARTICLES (login bg) ── */
+#loginBg{position:absolute;inset:0;z-index:-1}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div class="login-screen" id="loginScreen">
+  <canvas id="loginBg"></canvas>
+  <div class="login-logo">RusStudy<span>.</span></div>
+  <p class="login-sub">Connecte-toi pour suivre<br>l'avancement de ton dossier</p>
+  <input class="login-input" type="text" placeholder="Numéro de dossier (ex: RS-2025-001)" id="loginId"/>
+  <input class="login-input" type="tel" placeholder="Ton numéro WhatsApp" id="loginPhone"/>
+  <button class="login-btn" id="loginBtn">Accéder à mon dossier →</button>
+  <p class="login-hint">Demo : tape n'importe quoi et appuie sur le bouton</p>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="app" id="appShell" style="display:none">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <a href="index.html" class="topbar-logo">Rus<span>Study.</span></a>
+    <button class="notif-btn" id="notifBtn">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot"></div>
+    </button>
+  </div>
+
+  <!-- HERO CARD -->
+  <div class="hero-card reveal">
+    <canvas id="heroMini"></canvas>
+    <div class="hero-card-overlay">
+      <div class="hco-top">
+        <div>
+          <div class="candidate-name" id="dispName">Ayoub Mansouri</div>
+          <div class="candidate-id">Dossier #RS-2025-001 · Médecine</div>
+        </div>
+        <div class="status-badge"><div class="status-dot"></div>En cours</div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-label"><span>Avancement du dossier</span><span id="pctLabel">60%</span></div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-view="overview">Vue d'ensemble</button>
+    <button class="tab" data-view="docs">Documents</button>
+    <button class="tab" data-view="messages">Messages</button>
+    <button class="tab" data-view="universite">Université</button>
+  </div>
+
+  <!-- VIEW: OVERVIEW -->
+  <div class="view active" id="view-overview">
+
+    <!-- Quick Actions -->
+    <div class="section reveal">
+      <div class="section-title">Actions rapides</div>
+      <div class="qa-grid">
+        <button class="qa-btn" onclick="switchTab('docs')">
+          <div class="qa-icon" style="background:rgba(36,96,232,.2)">📄</div>
+          <div><div class="qa-label">Mes documents</div><div class="qa-sub">3 en attente</div></div>
+        </button>
+        <button class="qa-btn" onclick="switchTab('messages')">
+          <div class="qa-icon" style="background:rgba(168,85,247,.2)">💬</div>
+          <div><div class="qa-label">Messagerie</div><div class="qa-sub">2 nouveaux</div></div>
+        </button>
+        <button class="qa-btn" onclick="switchTab('universite')">
+          <div class="qa-icon" style="background:rgba(34,197,94,.2)">🏛️</div>
+          <div><div class="qa-label">Mon université</div><div class="qa-sub">Pirogov · Moscou</div></div>
+        </button>
+        <a class="qa-btn" href="index.html">
+          <div class="qa-icon" style="background:rgba(251,187,33,.2)">🏠</div>
+          <div><div class="qa-label">Accueil</div><div class="qa-sub">Site principal</div></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="section reveal">
+      <div class="section-title">Étapes du dossier</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-node done">✓</div><div class="tl-line done"></div></div>
+          <div class="tl-body"><div class="tl-title">Consultation initiale</div><div class="tl-desc">Profil évalué, filière confirmée : Médecine Générale</div><div class="tl-date">✓ Complété le 3 Jan 2025</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-node done">✓</div><div class="tl-line done"></div></div>
+          <div class="tl-body"><div class="tl-title">Préparation du dossier</div><div class="tl-desc">Documents traduits et légalisés par notre équipe</div><div class="tl-date">✓ Complété le 15 Jan 2025</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-node done">✓</div><div class="tl-line done"></div></div>
+          <div class="tl-body"><div class="tl-title">Dossier soumis</div><div class="tl-desc">Dossier envoyé à l'Université Médicale Pirogov</div><div class="tl-date">✓ Complété le 28 Jan 2025</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-node active">→</div><div class="tl-line"></div></div>
+          <div class="tl-body">
+            <div class="tl-title">Admission en cours ⏳</div>
+            <div class="tl-desc">L'université examine ton dossier. Délai estimé : 2–3 semaines.</div>
+            <div class="tl-date">🕐 En attente depuis le 1 Fév 2025</div>
+            <button class="tl-action"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.35 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.51 5.51l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>Contacter le conseiller</button>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-node pending">4</div><div class="tl-line"></div></div>
+          <div class="tl-body"><div class="tl-title" style="opacity:.4">Visa étudiant</div><div class="tl-desc" style="opacity:.3">Procédure visa après confirmation d'admission</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-node pending">5</div><div class="tl-line"></div></div>
+          <div class="tl-body"><div class="tl-title" style="opacity:.4">Départ & accueil</div><div class="tl-desc" style="opacity:.3">Transfert aéroport et installation sur le campus</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-node pending">✦</div><div class="tl-line" style="display:none"></div></div>
+          <div class="tl-body"><div class="tl-title" style="opacity:.4">Début des cours</div><div class="tl-desc" style="opacity:.3">Septembre 2025 — Université Médicale Pirogov</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW: DOCUMENTS -->
+  <div class="view" id="view-docs">
+    <div class="section reveal">
+      <div class="section-title">Mes documents</div>
+      <div class="docs-card">
+        <div class="doc-item">
+          <div class="doc-icon" style="background:rgba(34,197,94,.15)">📋</div>
+          <div class="doc-info">
+            <div class="doc-name">Baccalauréat (original)</div>
+            <div class="doc-status" style="color:#22C55E">✓ Validé</div>
+          </div>
+          <button class="doc-action"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon" style="background:rgba(34,197,94,.15)">🎓</div>
+          <div class="doc-info">
+            <div class="doc-name">Relevés de notes (traduits)</div>
+            <div class="doc-status" style="color:#22C55E">✓ Validé</div>
+          </div>
+          <button class="doc-action"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon" style="background:rgba(34,197,94,.15)">🆔</div>
+          <div class="doc-info">
+            <div class="doc-name">Passeport (copie certifiée)</div>
+            <div class="doc-status" style="color:#22C55E">✓ Validé</div>
+          </div>
+          <button class="doc-action"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon" style="background:rgba(251,187,33,.15)">🏥</div>
+          <div class="doc-info">
+            <div class="doc-name">Certificat médical</div>
+            <div class="doc-status" style="color:#FBBB21">⏳ En attente de validation</div>
+          </div>
+          <button class="doc-action" style="background:rgba(251,187,33,.2)"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg></button>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon" style="background:rgba(239,68,68,.15)">📸</div>
+          <div class="doc-info">
+            <div class="doc-name">Photos d'identité (format russe)</div>
+            <div class="doc-status" style="color:#EF4444">✗ Manquant — à envoyer</div>
+          </div>
+          <button class="doc-action" style="background:rgba(168,85,247,.2)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+        <div class="doc-item">
+          <div class="doc-icon" style="background:rgba(239,68,68,.15)">🩺</div>
+          <div class="doc-info">
+            <div class="doc-name">Casier judiciaire</div>
+            <div class="doc-status" style="color:#EF4444">✗ Manquant — à envoyer</div>
+          </div>
+          <button class="doc-action" style="background:rgba(168,85,247,.2)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="section reveal" style="padding-bottom:20px">
+      <button class="tl-action" style="width:100%;justify-content:center;background:var(--purple);color:#000;padding:14px;border-radius:50px;font-size:.9rem">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Envoyer un document manquant
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW: MESSAGES -->
+  <div class="view" id="view-messages">
+    <div class="section reveal">
+      <div class="section-title">Messagerie conseiller</div>
+      <div class="chat-wrap" id="chatWrap">
+        <div class="chat-bubble them">
+          Bonjour Ayoub ! Ton dossier a bien été reçu par l'Université Pirogov. Tout est en ordre. 🎉
+          <time>Lun 3 Jan · 10:22</time>
+        </div>
+        <div class="chat-bubble me">
+          Merci ! Est-ce que j'ai besoin d'autres documents ?
+          <time>Lun 3 Jan · 11:05</time>
+        </div>
+        <div class="chat-bubble them">
+          Oui, il nous manque les photos d'identité format russe (3.5×4.5cm, fond blanc) et le casier judiciaire apostillé. Envoie-les dès que possible !
+          <time>Lun 3 Jan · 11:18</time>
+        </div>
+        <div class="chat-bubble me">
+          D'accord, je les envoie cette semaine.
+          <time>Mar 4 Jan · 09:30</time>
+        </div>
+        <div class="chat-bubble them">
+          Parfait ! Dès réception, on les transmet à l'université. L'admission est attendue dans 2–3 semaines. 👍
+          <time>Mar 4 Jan · 10:00</time>
+        </div>
+      </div>
+      <div style="height:110px"></div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="Écrire un message..." type="text"/>
+      <button class="chat-send" id="chatSendBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    </div>
+  </div>
+
+  <!-- VIEW: UNIVERSITE -->
+  <div class="view" id="view-universite">
+    <div class="section reveal">
+      <div class="section-title">Ton université assignée</div>
+      <div class="uni-card">
+        <div class="uni-card-header">
+          <canvas id="uniCanvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:.2"></canvas>
+          <div style="position:relative">
+            <div class="uni-name">Université Médicale d'État Pirogov</div>
+            <div class="uni-city">📍 Moscou, Russie · Fondée en 1906</div>
+            <div class="uni-program">🩺 Médecine Générale — 6 ans</div>
+          </div>
+        </div>
+        <div class="uni-stats">
+          <div class="uni-stat"><div class="uni-stat-n">#47</div><div class="uni-stat-l">Russie</div></div>
+          <div class="uni-stat"><div class="uni-stat-n">8 000+</div><div class="uni-stat-l">Étudiants</div></div>
+          <div class="uni-stat"><div class="uni-stat-n">120+</div><div class="uni-stat-l">Pays repr.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="section reveal">
+      <div class="section-title">Informations pratiques</div>
+      <div class="docs-card">
+        <div class="doc-item"><div class="doc-icon" style="background:rgba(36,96,232,.15)">🗓</div><div class="doc-info"><div class="doc-name">Rentrée académique</div><div class="doc-status" style="color:#FBBB21">Septembre 2025</div></div></div>
+        <div class="doc-item"><div class="doc-icon" style="background:rgba(34,197,94,.15)">💰</div><div class="doc-info"><div class="doc-name">Frais de scolarité</div><div class="doc-status" style="color:#22C55E">3 500 € / an</div></div></div>
+        <div class="doc-item"><div class="doc-icon" style="background:rgba(168,85,247,.15)">🏠</div><div class="doc-info"><div class="doc-name">Logement campus</div><div class="doc-status" style="color:#A855F7">Résidence universitaire · ~150 €/mois</div></div></div>
+        <div class="doc-item"><div class="doc-icon" style="background:rgba(249,115,22,.15)">✈️</div><div class="doc-info"><div class="doc-name">Vol conseillé</div><div class="doc-status" style="opacity:.5">Tunis → Moscou · Avg 280 €</div></div></div>
+        <div class="doc-item"><div class="doc-icon" style="background:rgba(239,68,68,.15)">🌡</div><div class="doc-info"><div class="doc-name">Météo</div><div class="doc-status" style="opacity:.5">Hiver : -10°C · Été : 25°C</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="bnav-item active" data-view="overview">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Accueil</span>
+    </button>
+    <button class="bnav-item" data-view="docs">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Docs</span>
+    </button>
+    <button class="bnav-item" data-view="messages">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Messages</span>
+    </button>
+    <button class="bnav-item" data-view="universite">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Université</span>
+    </button>
+  </div>
+</div>
+
+<!-- NOTIFICATION DRAWER -->
+<div class="notif-drawer" id="notifDrawer">
+  <div class="notif-drawer-header">
+    <h3>Notifications</h3>
+    <button class="close-drawer" id="closeNotif"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+  </div>
+  <div class="notif-list">
+    <div class="notif-item new"><p>📄 Document manquant : <strong>Photos d'identité</strong> — à envoyer dès que possible.</p><time>Aujourd'hui, 09:15</time></div>
+    <div class="notif-item new"><p>💬 Nouveau message de ton conseiller <strong>Karim Ben Ali</strong>.</p><time>Hier, 11:30</time></div>
+    <div class="notif-item"><p>✅ Dossier soumis à l'Université Pirogov avec succès.</p><time>28 Jan, 14:00</time></div>
+    <div class="notif-item"><p>📋 Documents traduits et légalisés — dossier prêt à l'envoi.</p><time>15 Jan, 16:45</time></div>
+    <div class="notif-item"><p>🎉 Bienvenue chez RusStudy ! Ton dossier #RS-2025-001 est créé.</p><time>3 Jan, 10:00</time></div>
+  </div>
+</div>
+<div id="drawerOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190" onclick="closeNotifFn()"></div>
+
+<script>
+/* ══ LOGIN ══ */
+document.getElementById('loginBtn').onclick=function(){
+  const name=document.getElementById('loginId').value||'Candidat';
+  document.getElementById('dispName').textContent=name.includes('RS-')?'Ayoub Mansouri':name;
+  document.getElementById('loginScreen').style.opacity='0';
+  document.getElementById('loginScreen').style.transition='opacity .4s';
+  setTimeout(()=>{
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appShell').style.display='flex';
+    initApp();
+  },400);
+};
+document.getElementById('loginId').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click()});
+
+/* ══ LOGIN BG PARTICLES ══ */
+(function(){
+  const cv=document.getElementById('loginBg');
+  const body=cv.parentElement;
+  function resize(){cv.width=body.offsetWidth;cv.height=body.offsetHeight}
+  resize();window.addEventListener('resize',resize);
+  const ctx=cv.getContext('2d');
+  const particles=Array.from({length:60},()=>({
+    x:Math.random(),y:Math.random(),
+    vx:(Math.random()-.5)*.0004,vy:(Math.random()-.5)*.0004,
+    r:1+Math.random()*3,
+    color:['#2460E8','#A855F7','#FBBB21','#22C55E'][Math.floor(Math.random()*4)],
+    alpha:0.3+Math.random()*.5
+  }));
+  function frame(){
+    const W=cv.width,H=cv.height;
+    ctx.fillStyle='rgba(13,13,13,0.15)';ctx.fillRect(0,0,W,H);
+    particles.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=1;if(p.x>1)p.x=0;
+      if(p.y<0)p.y=1;if(p.y>1)p.y=0;
+      ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color;ctx.globalAlpha=p.alpha;ctx.fill();ctx.globalAlpha=1;
+    });
+    // connections
+    particles.forEach((a,i)=>particles.slice(i+1).forEach(b=>{
+      const dx=(a.x-b.x)*cv.width,dy=(a.y-b.y)*cv.height;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){ctx.beginPath();ctx.moveTo(a.x*W,a.y*H);ctx.lineTo(b.x*W,b.y*H);ctx.strokeStyle=`rgba(168,85,247,${.15*(1-d/100)})`;ctx.lineWidth=1;ctx.stroke()}
+    }));
+    requestAnimationFrame(frame);
+  }
+  ctx.fillStyle='#0D0D0D';ctx.fillRect(0,0,cv.width,cv.height);
+  frame();
+})();
+
+/* ══ APP INIT ══ */
+function initApp(){
+  // scroll reveal
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  // progress bar animate
+  setTimeout(()=>{document.getElementById('progressFill').style.width='60%'},300);
+  // hero mini canvas
+  heroMiniCanvas();
+  // uni canvas
+  uniCanvasDraw();
+}
+
+/* ══ HERO MINI WEBGL ══ */
+function heroMiniCanvas(){
+  const cv=document.getElementById('heroMini');
+  const box=cv.parentElement;
+  cv.width=box.offsetWidth*devicePixelRatio;cv.height=180*devicePixelRatio;
+  cv.style.width=box.offsetWidth+'px';cv.style.height='180px';
+  const gl=cv.getContext('webgl');
+  if(!gl){const ctx=cv.getContext('2d');const g=ctx.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#0a1a6e');g.addColorStop(1,'#4a00b0');ctx.fillStyle=g;ctx.fillRect(0,0,cv.width,cv.height);return}
+  const VS=`attribute vec2 a;varying vec2 v;void main(){v=a*.5+.5;gl_Position=vec4(a,0,1);}`;
+  const FS=`precision mediump float;uniform float t;varying vec2 v;
+float n(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}
+void main(){
+  vec2 uv=v;
+  vec3 c=mix(vec3(.05,.08,.35),vec3(.25,.05,.55),uv.y+sin(t*.3)*.15);
+  // flowing waves
+  float w=sin(uv.x*8.+t)*sin(uv.y*6.+t*.7)*.08;
+  c+=vec3(.1,.3,.9)*smoothstep(.4,.6,uv.y+w);
+  // particles
+  float star=step(.992,n(floor(uv*120.+t*.02)));
+  c+=star*vec3(1.,1.,.8)*.9;
+  float vig=length((uv-.5)*1.3);
+  c*=1.-vig*.5;
+  gl_FragColor=vec4(c,1.);
+}`;
+  function sh(t,s){const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);return x}
+  const p=gl.createProgram();gl.attachShader(p,sh(gl.VERTEX_SHADER,VS));gl.attachShader(p,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(p);gl.useProgram(p);
+  const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const al=gl.getAttribLocation(p,'a');gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
+  const tl=gl.getUniformLocation(p,'t');let start=performance.now();
+  function f(){gl.viewport(0,0,cv.width,cv.height);gl.uniform1f(tl,(performance.now()-start)*.001);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(f)}f();
+}
+
+/* ══ UNI CANVAS ══ */
+function uniCanvasDraw(){
+  const cv=document.getElementById('uniCanvas');if(!cv)return;
+  const box=cv.parentElement;
+  cv.width=box.offsetWidth*devicePixelRatio;cv.height=box.offsetHeight*devicePixelRatio;
+  const ctx=cv.getContext('2d');const W=cv.width,H=cv.height;
+  // simple architectural lines
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+  for(let i=0;i<8;i++){const x=i*W/7;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let i=0;i<5;i++){const y=i*H/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+}
+
+/* ══ TABS / VIEWS ══ */
+function switchTab(viewId){
+  document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.view===viewId)});
+  document.querySelectorAll('.view').forEach(v=>{v.classList.toggle('active',v.id==='view-'+viewId)});
+  document.querySelectorAll('.bnav-item').forEach(b=>{b.classList.toggle('active',b.dataset.view===viewId)});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.tab,.bnav-item').forEach(el=>{
+  el.addEventListener('click',()=>switchTab(el.dataset.view));
+});
+
+/* ══ NOTIFICATIONS ══ */
+document.getElementById('notifBtn').onclick=()=>{
+  document.getElementById('notifDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').style.display='block';
+};
+document.getElementById('closeNotif').onclick=closeNotifFn;
+function closeNotifFn(){document.getElementById('notifDrawer').classList.remove('open');document.getElementById('drawerOverlay').style.display='none'}
+
+/* ══ CHAT ══ */
+document.getElementById('chatSendBtn').onclick=sendMsg;
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg()});
+function sendMsg(){
+  const inp=document.getElementById('chatInput');
+  const msg=inp.value.trim();if(!msg)return;
+  const wrap=document.getElementById('chatWrap');
+  const now=new Date();const time=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  const bubble=document.createElement('div');
+  bubble.className='chat-bubble me';
+  bubble.innerHTML=msg+`<time>Aujourd'hui, ${time}</time>`;
+  wrap.appendChild(bubble);inp.value='';
+  wrap.scrollTop=wrap.scrollHeight;
+  // auto-reply
+  setTimeout(()=>{
+    const replies=['Je transmets ta question à l\'équipe ! 😊','On revient vers toi très vite.','Bonne question ! Notre équipe va t\'aider.','Bien reçu ! On s\'en occupe.'];
+    const r=document.createElement('div');
+    r.className='chat-bubble them';
+    r.innerHTML=replies[Math.floor(Math.random()*replies.length)]+`<time>Aujourd'hui, ${time}</time>`;
+    wrap.appendChild(r);wrap.scrollTop=wrap.scrollHeight;
+  },1200);
+}
+</script>
+</body>
+</html>

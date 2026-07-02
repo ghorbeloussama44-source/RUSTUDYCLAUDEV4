@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>RusStudy Admin — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Space Grotesk',sans-serif;background:#0D0D0D;color:#fff;min-height:100svh}
+:root{--bg:#0D0D0D;--s1:#181818;--s2:#222;--s3:#2a2a2a;--blue:#2460E8;--orange:#F97316;--yellow:#FBBB21;--green:#22C55E;--purple:#A855F7;--red:#EF4444;--pad:20px}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100svh}
+@media(max-width:768px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+
+/* SIDEBAR */
+.sidebar{background:var(--s1);border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:20px 0}
+.sb-logo{padding:0 20px 24px;font-size:1.2rem;font-weight:700;letter-spacing:-.04em;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px}
+.sb-logo span{color:var(--purple)}
+.sb-nav{flex:1;padding:0 10px;display:flex;flex-direction:column;gap:2px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;cursor:pointer;color:rgba(255,255,255,.45);font-size:.875rem;font-weight:600;transition:all .18s;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--s2);color:#fff}
+.sb-item.active{background:var(--purple);color:#000}
+.sb-item svg{stroke:currentColor;fill:none;width:18px;height:18px;stroke-width:2;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:50px;padding:1px 7px;font-size:.65rem;font-weight:700}
+.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-user{font-size:.78rem;opacity:.4}
+
+/* MAIN */
+.main{display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px var(--pad);background:var(--bg);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:50}
+.topbar h1{font-size:1.1rem;font-weight:700;letter-spacing:-.02em}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.search-box{background:var(--s2);border:1.5px solid rgba(255,255,255,.1);border-radius:50px;padding:9px 16px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.83rem;outline:none;width:220px;transition:border-color .2s}
+.search-box:focus{border-color:var(--purple)}
+.search-box::placeholder{color:rgba(255,255,255,.3)}
+.notif-btn{width:38px;height:38px;border-radius:50%;background:var(--s2);border:none;cursor:pointer;display:grid;place-items:center;position:relative}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--bg)}
+.notif-btn svg{stroke:#fff;fill:none;width:16px;height:16px;stroke-width:2}
+.content{flex:1;overflow-y:auto;padding:var(--pad)}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* VIEWS */
+.view{display:none}.view.active{display:block}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--s1);border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:.12}
+.kpi.blue::before{background:var(--blue)}
+.kpi.green::before{background:var(--green)}
+.kpi.yellow::before{background:var(--yellow)}
+.kpi.red::before{background:var(--red)}
+.kpi.purple::before{background:var(--purple)}
+.kpi-n{font-size:2rem;font-weight:700;letter-spacing:-.04em;line-height:1}
+.kpi-l{font-size:.72rem;opacity:.45;margin-top:5px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.kpi-delta{font-size:.72rem;margin-top:8px;font-weight:600}
+.kpi-delta.up{color:var(--green)}.kpi-delta.dn{color:var(--red)}
+
+/* TABLE */
+.table-wrap{background:var(--s1);border-radius:16px;overflow:hidden;margin-bottom:20px}
+.table-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.table-header h3{font-size:.95rem;font-weight:700}
+.table-actions{display:flex;gap:8px}
+.btn{border-radius:50px;padding:8px 16px;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.78rem;transition:filter .15s}
+.btn:hover{filter:brightness(1.1)}
+.btn-sm{padding:5px 12px;font-size:.73rem}
+.btn-purple{background:var(--purple);color:#000}
+.btn-ghost{background:var(--s2);color:rgba(255,255,255,.6)}
+.btn-green{background:var(--green);color:#000}
+.btn-red{background:var(--red);color:#fff}
+.btn-yellow{background:var(--yellow);color:#000}
+.btn-blue{background:var(--blue);color:#fff}
+table{width:100%;border-collapse:collapse}
+th{padding:11px 16px;text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.35;background:var(--s1);position:sticky;top:0}
+td{padding:12px 16px;border-top:1px solid rgba(255,255,255,.04);font-size:.83rem;vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:50px;padding:4px 10px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.badge.nouveau{background:rgba(251,187,33,.15);color:var(--yellow)}
+.badge.en_cours{background:rgba(36,96,232,.15);color:#7ab4ff}
+.badge.admis{background:rgba(34,197,94,.15);color:var(--green)}
+.badge.refuse{background:rgba(239,68,68,.15);color:var(--red)}
+.badge.doc_ok{background:rgba(34,197,94,.15);color:var(--green)}
+.badge.doc_wait{background:rgba(251,187,33,.15);color:var(--yellow)}
+.badge.doc_no{background:rgba(239,68,68,.15);color:var(--red)}
+
+/* GRID 2 COLS */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+
+/* CHART BAR */
+.chart-bar-wrap{background:var(--s1);border-radius:16px;padding:18px;margin-bottom:20px}
+.chart-bar-wrap h3{font-size:.9rem;font-weight:700;margin-bottom:16px;opacity:.7}
+.bar-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-label{font-size:.78rem;width:140px;flex-shrink:0;opacity:.65;text-align:right}
+.bar-track{flex:1;height:10px;background:var(--s2);border-radius:50px;overflow:hidden}
+.bar-fill{height:100%;border-radius:50px;transition:width 1s ease}
+.bar-val{font-size:.72rem;font-weight:700;width:32px;text-align:right;flex-shrink:0;opacity:.6}
+
+/* DETAIL PANEL */
+.detail-panel{
+  position:fixed;top:0;right:-100%;bottom:0;width:min(480px,100%);
+  background:var(--s1);z-index:200;border-left:1px solid rgba(255,255,255,.06);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:right .35s cubic-bezier(.23,1,.32,1);
+  box-shadow:-20px 0 60px rgba(0,0,0,.5);
+}
+.detail-panel.open{right:0}
+.dp-header{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.dp-header h3{font-size:.95rem;font-weight:700}
+.dp-close{background:var(--s2);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:grid;place-items:center}
+.dp-close svg{stroke:#fff;fill:none;width:16px;height:16px;stroke-width:2}
+.dp-body{flex:1;overflow-y:auto;padding:20px}
+.dp-section{margin-bottom:20px}
+.dp-section h4{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.35;margin-bottom:10px}
+.dp-field{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.83rem}
+.dp-field:last-child{border-bottom:none}
+.dp-field .lbl{opacity:.45}
+.dp-field .val{font-weight:600;text-align:right}
+.dp-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+
+/* TIMELINE in detail */
+.mini-tl{display:flex;flex-direction:column;gap:0}
+.mtl-item{display:flex;gap:10px}
+.mtl-left{display:flex;flex-direction:column;align-items:center;width:24px;flex-shrink:0}
+.mtl-node{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.65rem;font-weight:700;flex-shrink:0}
+.mtl-node.done{background:var(--green);color:#000}
+.mtl-node.active{background:var(--yellow);color:#000}
+.mtl-node.pending{background:var(--s2);color:rgba(255,255,255,.3)}
+.mtl-line{flex:1;width:2px;background:var(--s2);margin:2px 0}
+.mtl-line.done{background:var(--green)}
+.mtl-body{padding:1px 0 16px;flex:1}
+.mtl-title{font-size:.82rem;font-weight:600}
+.mtl-date{font-size:.7rem;opacity:.4;margin-top:2px}
+
+/* STATUS SELECT */
+.status-select{background:var(--s2);border:1.5px solid rgba(255,255,255,.1);border-radius:50px;padding:8px 14px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.83rem;outline:none;cursor:pointer}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filter-pill{border-radius:50px;padding:7px 16px;border:1.5px solid rgba(255,255,255,.1);background:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.45);transition:all .18s}
+.filter-pill.active{background:#fff;color:#000;border-color:#fff}
+
+/* LOGIN */
+.login-wrap{min-height:100svh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
+.login-box{background:var(--s1);border-radius:24px;padding:32px;width:min(380px,100%);text-align:center}
+.login-box h1{font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.login-box p{font-size:.83rem;opacity:.4;margin-bottom:24px}
+.form-in{width:100%;background:var(--s2);border:1.5px solid rgba(255,255,255,.1);border-radius:50px;padding:12px 18px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.88rem;outline:none;margin-bottom:10px;transition:border-color .2s}
+.form-in:focus{border-color:var(--purple)}
+.form-in::placeholder{color:rgba(255,255,255,.3)}
+.err-msg{color:var(--red);font-size:.78rem;margin-top:8px;display:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s1);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:12px 24px;font-size:.83rem;font-weight:600;z-index:999;transition:transform .3s;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginPage" style="min-height:100svh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg)">
+  <div style="background:var(--s1);border-radius:24px;padding:32px;width:min(380px,100%);text-align:center">
+    <div style="font-size:1.6rem;font-weight:700;letter-spacing:-.04em;margin-bottom:4px">RusStudy<span style="color:var(--purple)">.</span></div>
+    <p style="font-size:.83rem;opacity:.4;margin-bottom:28px">Espace administration</p>
+    <input class="form-in" type="text" id="adminUser" placeholder="Nom d'utilisateur" value="admin"/>
+    <input class="form-in" type="password" id="adminPass" placeholder="Mot de passe" value="Admin@RusStudy2025!"/>
+    <div style="color:var(--red);font-size:.78rem;margin-bottom:8px;display:none" id="loginErr">Identifiants incorrects</div>
+    <button class="btn btn-purple" style="width:100%;padding:13px;font-size:.9rem" onclick="doLogin()">Connexion →</button>
+    <p style="font-size:.7rem;opacity:.25;margin-top:16px">Demo: admin / Admin@RusStudy2025!</p>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="layout" id="appLayout" style="display:none">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-logo">RusStudy<span>.</span> Admin</div>
+    <nav class="sb-nav">
+      <button class="sb-item active" onclick="showView('dashboard',this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="sb-item" onclick="showView('candidatures',this)">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Candidatures
+        <span class="sb-badge" id="badgeNew">0</span>
+      </button>
+      <button class="sb-item" onclick="showView('documents',this)">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Documents
+      </button>
+      <button class="sb-item" onclick="showView('messages',this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+      </button>
+      <button class="sb-item" onclick="showView('stats',this)">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Statistiques
+      </button>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user" id="sbUser">Admin</div>
+      <button class="sb-item" style="margin-top:8px;padding:8px 14px" onclick="logout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Déconnexion
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="topbar-right">
+        <input class="search-box" type="text" placeholder="Rechercher un candidat..." id="searchBox" oninput="searchCandidats(this.value)"/>
+        <button class="notif-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-dot"></div></button>
+        <a href="index.html" class="btn btn-ghost btn-sm">← Site</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="view active" id="view-dashboard">
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi blue"><div class="kpi-n" id="kpiTotal">—</div><div class="kpi-l">Total dossiers</div><div class="kpi-delta up" id="kpiMonth">↑ ce mois</div></div>
+          <div class="kpi yellow"><div class="kpi-n" id="kpiNew">—</div><div class="kpi-l">Nouveaux</div></div>
+          <div class="kpi purple"><div class="kpi-n" id="kpiEnCours">—</div><div class="kpi-l">En cours</div></div>
+          <div class="kpi green"><div class="kpi-n" id="kpiAdmis">—</div><div class="kpi-l">Admis</div></div>
+          <div class="kpi red"><div class="kpi-n" id="kpiRefuse">—</div><div class="kpi-l">Refusés</div></div>
+        </div>
+
+        <div class="grid2">
+          <div class="chart-bar-wrap">
+            <h3>Filieres populaires</h3>
+            <div id="filiereChart"></div>
+          </div>
+          <div class="chart-bar-wrap">
+            <h3>Villes en Russie</h3>
+            <div id="villeChart"></div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-header"><h3>Candidatures récentes</h3><button class="btn btn-purple btn-sm" onclick="showView('candidatures',null);openNewModal()">+ Nouveau dossier</button></div>
+          <table>
+            <thead><tr><th>Dossier</th><th>Candidat</th><th>Filière</th><th>Statut</th><th>Date</th></tr></thead>
+            <tbody id="recentTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ CANDIDATURES ═══ -->
+      <div class="view" id="view-candidatures">
+        <div class="filters">
+          <button class="filter-pill active" onclick="filterCands('',this)">Tous</button>
+          <button class="filter-pill" onclick="filterCands('nouveau',this)">Nouveaux</button>
+          <button class="filter-pill" onclick="filterCands('en_cours',this)">En cours</button>
+          <button class="filter-pill" onclick="filterCands('admis',this)">Admis</button>
+          <button class="filter-pill" onclick="filterCands('refuse',this)">Refusés</button>
+          <button class="btn btn-purple btn-sm" onclick="openNewModal()" style="margin-left:auto">+ Ajouter</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nom</th><th>Filière</th><th>Statut</th><th>Étape</th><th>Conseiller</th><th>Date</th><th></th></tr></thead>
+            <tbody id="candsTable"></tbody>
+          </table>
+          <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.06)">
+            <span style="font-size:.78rem;opacity:.4" id="paginInfo">—</span>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" id="prevBtn" onclick="changePage(-1)">← Précédent</button>
+              <button class="btn btn-ghost btn-sm" id="nextBtn" onclick="changePage(1)">Suivant →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ DOCUMENTS ═══ -->
+      <div class="view" id="view-documents">
+        <p style="opacity:.4;font-size:.83rem;margin-bottom:16px">Sélectionne un candidat pour gérer ses documents.</p>
+        <div class="table-wrap">
+          <div class="table-header"><h3>Documents en attente de validation</h3></div>
+          <table>
+            <thead><tr><th>Candidat</th><th>Document</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody id="docsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ MESSAGES ═══ -->
+      <div class="view" id="view-messages">
+        <div class="grid2" style="gap:0;height:calc(100svh - 120px)">
+          <div style="background:var(--s1);border-radius:16px 0 0 16px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);font-size:.83rem;font-weight:700;opacity:.5">Conversations</div>
+            <div style="flex:1;overflow-y:auto" id="convList"></div>
+          </div>
+          <div style="background:var(--s2);border-radius:0 16px 16px 0;display:flex;flex-direction:column">
+            <div style="padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);font-size:.83rem;font-weight:700" id="chatHeader">Sélectionner une conversation</div>
+            <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px" id="chatMsgs"></div>
+            <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px">
+              <input style="flex:1;background:var(--s1);border:1.5px solid rgba(255,255,255,.1);border-radius:50px;padding:10px 16px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.83rem;outline:none" placeholder="Écrire un message..." id="adminMsgInput"/>
+              <button class="btn btn-purple" id="adminMsgSend" onclick="sendAdminMsg()">Envoyer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ STATS ═══ -->
+      <div class="view" id="view-stats">
+        <div class="kpi-grid">
+          <div class="kpi blue"><div class="kpi-n" id="s_total">—</div><div class="kpi-l">Total candidats</div></div>
+          <div class="kpi green"><div class="kpi-n" id="s_admis">—</div><div class="kpi-l">Taux d'admission</div></div>
+          <div class="kpi purple"><div class="kpi-n" id="s_month">—</div><div class="kpi-l">Ce mois</div></div>
+        </div>
+        <div class="chart-bar-wrap" style="margin-top:12px">
+          <h3>Répartition par filière</h3>
+          <div id="statsFiliere"></div>
+        </div>
+        <div class="chart-bar-wrap">
+          <h3>Répartition par ville (Russie)</h3>
+          <div id="statsVille"></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-header">
+    <h3 id="dpTitle">Dossier</h3>
+    <button class="dp-close" onclick="closeDetail()"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+  </div>
+  <div class="dp-body" id="dpBody"></div>
+  <div class="dp-footer" id="dpFooter"></div>
+</div>
+<div id="panelOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:190" onclick="closeDetail()"></div>
+
+<!-- NEW CAND MODAL -->
+<div id="newModal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--s1);border-radius:20px;width:min(500px,100%);max-height:85svh;overflow-y:auto;padding:24px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:20px">
+      <h3 style="font-size:1rem;font-weight:700">Nouveau dossier</h3>
+      <button onclick="closeNewModal()" style="background:var(--s2);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;color:#fff;font-size:1rem">×</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label style="font-size:.68rem;opacity:.4;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Prénom *</label><input class="form-in" id="n_prenom" placeholder="Prénom"/></div>
+      <div><label style="font-size:.68rem;opacity:.4;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Nom *</label><input class="form-in" id="n_nom" placeholder="Nom"/></div>
+      <div><label style="font-size:.68rem;opacity:.4;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Email *</label><input class="form-in" id="n_email" type="email" placeholder="email@exemple.com"/></div>
+      <div><label style="font-size:.68rem;opacity:.4;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">WhatsApp *</label><input class="form-in" id="n_phone" placeholder="+216 XX XXX XXX"/></div>
+    </div>
+    <label style="font-size:.68rem;opacity:.4;display:block;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.08em">Filière *</label>
+    <select class="form-in" id="n_filiere" style="border-radius:50px;cursor:pointer">
+      <option value="">Choisir</option>
+      <option>Médecine Générale</option><option>Pharmacie</option><option>Dentaire</option>
+      <option>Ingénierie</option><option>Économie / MBA</option><option>Droit</option>
+      <option>Architecture</option><option>Informatique</option>
+    </select>
+    <label style="font-size:.68rem;opacity:.4;display:block;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.08em">Ville en Russie</label>
+    <select class="form-in" id="n_ville" style="border-radius:50px;cursor:pointer">
+      <option value="">Peu importe</option><option>Moscou</option><option>Saint-Pétersbourg</option><option>Kazan</option>
+    </select>
+    <button class="btn btn-purple" style="width:100%;margin-top:16px;padding:13px;font-size:.9rem" onclick="createCandidature()">Créer le dossier →</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api'; // Changer par https://votre-api.com/api en prod
+let TOKEN = '';
+let currentPage = 1;
+let currentFilter = '';
+let currentSearch = '';
+let currentCand = null;
+let currentConv = null;
+
+/* ══ AUTH ══ */
+async function doLogin() {
+  const user = document.getElementById('adminUser').value;
+  const pass = document.getElementById('adminPass').value;
+  try {
+    const r = await api('POST', '/admin/login', { username: user, password: pass });
+    TOKEN = r.token;
+    localStorage.setItem('adminToken', TOKEN);
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appLayout').style.display = 'grid';
+    document.getElementById('sbUser').textContent = r.nom || user;
+    loadDashboard();
+  } catch {
+    toast('Identifiants incorrects', 'err');
+    // DEMO MODE sans backend
+    demoMode();
+  }
+}
+
+function demoMode() {
+  TOKEN = 'demo';
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appLayout').style.display = 'grid';
+  document.getElementById('sbUser').textContent = 'Admin (Demo)';
+  loadDashboardDemo();
+}
+
+function logout() {
+  localStorage.removeItem('adminToken');
+  location.reload();
+}
+
+/* ══ API HELPER ══ */
+async function api(method, path, body) {
+  if (TOKEN === 'demo') return demoApi(method, path, body);
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  if (!r.ok) throw await r.json();
+  return r.json();
+}
+
+/* ══ DEMO DATA ══ */
+const DEMO_CANDS = [
+  { id:'RS-2025-001', prenom:'Ayoub', nom:'Mansouri', email:'ayoub@mail.com', phone:'+21698111222', filiere:'Médecine Générale', statut:'en_cours', etape:4, progression:60, conseiller:'Karim Ben Ali', ville_russie:'Moscou', bac_mention:'Très Bien', created_at:'2025-01-03 10:00' },
+  { id:'RS-2025-002', prenom:'Sarra', nom:'Belhadj', email:'sarra@mail.com', phone:'+21692333444', filiere:'Ingénierie', statut:'admis', etape:7, progression:95, conseiller:'Karim Ben Ali', ville_russie:'Saint-Pétersbourg', bac_mention:'Bien', created_at:'2025-01-08 14:00' },
+  { id:'RS-2025-003', prenom:'Mohamed', nom:'Khlifi', email:'med@mail.com', phone:'+21655444555', filiere:'Pharmacie', statut:'en_cours', etape:3, progression:40, conseiller:'Sara Trabelsi', ville_russie:'Kazan', bac_mention:'Très Bien', created_at:'2025-01-15 09:30' },
+  { id:'RS-2025-004', prenom:'Nour', nom:'Chaabane', email:'nour@mail.com', phone:'+21621555666', filiere:'Économie / MBA', statut:'nouveau', etape:1, progression:10, conseiller:'Karim Ben Ali', ville_russie:'Moscou', bac_mention:'Assez Bien', created_at:'2025-02-01 11:00' },
+  { id:'RS-2025-005', prenom:'Amine', nom:'Trabelsi', email:'amine@mail.com', phone:'+21698666777', filiere:'Architecture', statut:'nouveau', etape:1, progression:10, conseiller:'Sara Trabelsi', ville_russie:'Moscou', bac_mention:'Bien', created_at:'2025-02-03 15:30' },
+  { id:'RS-2025-006', prenom:'Lina', nom:'Bouzid', email:'lina@mail.com', phone:'+21692777888', filiere:'Médecine Générale', statut:'refuse', etape:4, progression:50, conseiller:'Karim Ben Ali', ville_russie:'Saint-Pétersbourg', bac_mention:'Passable', created_at:'2025-01-20 08:00' },
+];
+const DEMO_STATS = {
+  total:6, nouveau:2, encours:2, admis:1, refused:1, moisActuel:2,
+  filieres:[{filiere:'Médecine Générale',n:2},{filiere:'Ingénierie',n:1},{filiere:'Pharmacie',n:1},{filiere:'Économie / MBA',n:1},{filiere:'Architecture',n:1}],
+  villes:[{ville_russie:'Moscou',n:3},{ville_russie:'Saint-Pétersbourg',n:2},{ville_russie:'Kazan',n:1}],
+  recent: DEMO_CANDS.slice(0,5)
+};
+
+function demoApi(method, path, body) {
+  if (path === '/admin/login') return Promise.resolve({ token:'demo', nom:'Admin Demo' });
+  if (path === '/stats') return Promise.resolve(DEMO_STATS);
+  if (path.match(/\/candidatures$/) && method === 'GET') return Promise.resolve({ data: DEMO_CANDS, total: 6, page: 1, pages: 1 });
+  if (path.match(/\/candidatures\/[^/]+$/) && method === 'GET') {
+    const id = path.split('/').pop();
+    const c = DEMO_CANDS.find(x => x.id === id);
+    return Promise.resolve({ ...c, etapes: [
+      {numero:1,titre:'Consultation initiale',statut:'done',date_done:'2025-01-03'},
+      {numero:2,titre:'Préparation dossier',statut:'done',date_done:'2025-01-15'},
+      {numero:3,titre:'Soumission dossier',statut:'done',date_done:'2025-01-28'},
+      {numero:4,titre:'Admission universitaire',statut:'active'},
+      {numero:5,titre:'Visa étudiant',statut:'pending'},
+      {numero:6,titre:'Départ & accueil',statut:'pending'},
+      {numero:7,titre:'Début des cours',statut:'pending'},
+    ], docs: [
+      {id:1,nom:'Baccalauréat',statut:'valide'},{id:2,nom:'Relevés de notes',statut:'valide'},
+      {id:3,nom:'Passeport',statut:'valide'},{id:4,nom:'Certificat médical',statut:'recu'},
+      {id:5,nom:'Photos identité',statut:'manquant'},{id:6,nom:'Casier judiciaire',statut:'manquant'}
+    ]});
+  }
+  if (path.includes('/msgs')) return Promise.resolve([{sender:'Équipe RusStudy',sender_role:'conseiller',content:'Bonjour ! Ton dossier est en cours de traitement.',created_at:'2025-01-03 10:05'}]);
+  if (method === 'POST' || method === 'PUT') return Promise.resolve({ success: true });
+  return Promise.resolve({});
+}
+
+/* ══ VIEWS ══ */
+function showView(v, btn) {
+  document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(x => x.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const titles = { dashboard:'Dashboard', candidatures:'Candidatures', documents:'Documents', messages:'Messages', stats:'Statistiques' };
+  document.getElementById('pageTitle').textContent = titles[v] || v;
+  if (v === 'candidatures') loadCandidatures();
+  if (v === 'dashboard') loadDashboard();
+  if (v === 'documents') loadDocuments();
+  if (v === 'messages') loadConversations();
+  if (v === 'stats') loadStats();
+}
+
+/* ══ DASHBOARD ══ */
+async function loadDashboard() {
+  const s = await api('GET', '/stats');
+  document.getElementById('kpiTotal').textContent = s.total;
+  document.getElementById('kpiNew').textContent = s.nouveau;
+  document.getElementById('kpiEnCours').textContent = s.encours;
+  document.getElementById('kpiAdmis').textContent = s.admis;
+  document.getElementById('kpiRefuse').textContent = s.refused;
+  document.getElementById('kpiMonth').textContent = `↑ ${s.moisActuel} ce mois`;
+  document.getElementById('badgeNew').textContent = s.nouveau;
+  renderBarChart('filiereChart', s.filieres.map(x => ({ label: x.filiere.replace(/\s*\/.*/, ''), val: x.n, color: '#2460E8' })), s.total);
+  renderBarChart('villeChart', s.villes.map(x => ({ label: x.ville_russie || '?', val: x.n, color: '#A855F7' })), s.total);
+  const tb = document.getElementById('recentTable');
+  tb.innerHTML = s.recent.map(c => `<tr onclick="openDetail('${c.id}')">
+    <td style="font-weight:700;color:var(--purple)">${c.id}</td>
+    <td>${c.prenom} ${c.nom}</td>
+    <td style="opacity:.6">${c.filiere}</td>
+    <td><span class="badge ${c.statut}">${labelStatut(c.statut)}</span></td>
+    <td style="opacity:.4;font-size:.75rem">${c.created_at.slice(0,10)}</td>
+  </tr>`).join('');
+}
+function loadDashboardDemo() { loadDashboard(); }
+
+/* ══ CANDIDATURES ══ */
+async function loadCandidatures() {
+  let url = `/candidatures?page=${currentPage}&limit=15`;
+  if (currentFilter) url += `&statut=${currentFilter}`;
+  if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+  const r = await api('GET', url);
+  renderCandTable(r.data);
+  document.getElementById('paginInfo').textContent = `${r.total} dossier(s) — Page ${r.page}/${r.pages}`;
+  document.getElementById('prevBtn').disabled = r.page <= 1;
+  document.getElementById('nextBtn').disabled = r.page >= r.pages;
+}
+function renderCandTable(data) {
+  document.getElementById('candsTable').innerHTML = data.map(c => `
+    <tr onclick="openDetail('${c.id}')">
+      <td style="font-weight:700;color:var(--purple);font-size:.78rem">${c.id}</td>
+      <td><div style="font-weight:600">${c.prenom} ${c.nom}</div><div style="font-size:.72rem;opacity:.4">${c.email||''}</div></td>
+      <td style="opacity:.65;font-size:.8rem">${c.filiere}</td>
+      <td><span class="badge ${c.statut}">${labelStatut(c.statut)}</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;height:4px;background:var(--s2);border-radius:50px;overflow:hidden"><div style="height:100%;background:var(--purple);width:${c.progression||0}%"></div></div><span style="font-size:.7rem;opacity:.5">${c.progression||0}%</span></div></td>
+      <td style="opacity:.5;font-size:.78rem">${c.conseiller||'—'}</td>
+      <td style="opacity:.4;font-size:.72rem">${c.created_at?.slice(0,10)||'—'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openDetail('${c.id}')">Voir →</button></td>
+    </tr>`).join('');
+}
+function filterCands(f, btn) {
+  currentFilter = f; currentPage = 1;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  loadCandidatures();
+}
+function searchCandidats(v) { currentSearch = v; currentPage = 1; if (document.getElementById('view-candidatures').classList.contains('active')) loadCandidatures(); }
+function changePage(d) { currentPage += d; loadCandidatures(); }
+
+/* ══ DETAIL PANEL ══ */
+async function openDetail(id) {
+  currentCand = id;
+  document.getElementById('panelOverlay').style.display = 'block';
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('dpTitle').textContent = `Dossier ${id}`;
+  document.getElementById('dpBody').innerHTML = '<div style="opacity:.4;padding:20px;text-align:center">Chargement...</div>';
+  const c = await api('GET', `/candidatures/${id}`);
+  const etapes = c.etapes || [];
+  document.getElementById('dpBody').innerHTML = `
+    <div class="dp-section">
+      <h4>Infos personnelles</h4>
+      <div class="dp-field"><span class="lbl">Nom</span><span class="val">${c.prenom} ${c.nom}</span></div>
+      <div class="dp-field"><span class="lbl">Email</span><span class="val" style="font-size:.78rem">${c.email}</span></div>
+      <div class="dp-field"><span class="lbl">WhatsApp</span><span class="val">${c.phone}</span></div>
+      <div class="dp-field"><span class="lbl">Filière</span><span class="val">${c.filiere}</span></div>
+      <div class="dp-field"><span class="lbl">Ville</span><span class="val">${c.ville_russie||'—'}</span></div>
+      <div class="dp-field"><span class="lbl">Bac</span><span class="val">${c.bac_mention||'—'}</span></div>
+    </div>
+    <div class="dp-section">
+      <h4>Statut</h4>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+        <select class="status-select" id="dpStatut" onchange="updateStatut('${id}',this.value)">
+          <option value="nouveau" ${c.statut==='nouveau'?'selected':''}>🟡 Nouveau</option>
+          <option value="en_cours" ${c.statut==='en_cours'?'selected':''}>🔵 En cours</option>
+          <option value="admis" ${c.statut==='admis'?'selected':''}>🟢 Admis</option>
+          <option value="refuse" ${c.statut==='refuse'?'selected':''}>🔴 Refusé</option>
+        </select>
+        <span style="font-size:.78rem;opacity:.4">${c.progression||0}%</span>
+      </div>
+    </div>
+    <div class="dp-section">
+      <h4>Étapes du dossier</h4>
+      <div class="mini-tl">
+        ${etapes.map((e,i) => `
+          <div class="mtl-item">
+            <div class="mtl-left">
+              <div class="mtl-node ${e.statut}">${e.statut==='done'?'✓':e.statut==='active'?'→':e.numero}</div>
+              ${i<etapes.length-1?`<div class="mtl-line ${e.statut==='done'?'done':''}"></div>`:''}
+            </div>
+            <div class="mtl-body">
+              <div class="mtl-title" style="${e.statut==='pending'?'opacity:.4':''}">${e.titre}</div>
+              ${e.date_done?`<div class="mtl-date">✓ ${e.date_done.slice(0,10)}</div>`:''}
+              ${e.statut==='active'?`<div class="mtl-date" style="color:var(--yellow)">⏳ En cours</div>`:''}
+              ${e.statut!=='done'?`<button class="btn btn-green btn-sm" style="margin-top:4px" onclick="validerEtape('${id}',${e.numero})">✓ Valider</button>`:''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="dp-section">
+      <h4>Documents (${(c.docs||[]).length})</h4>
+      ${(c.docs||[]).map(d => `
+        <div class="dp-field">
+          <span class="lbl" style="font-size:.75rem">${d.nom}</span>
+          <span class="badge ${d.statut==='valide'?'doc_ok':d.statut==='recu'?'doc_wait':'doc_no'}">${d.statut}</span>
+        </div>`).join('')}
+    </div>`;
+  document.getElementById('dpFooter').innerHTML = `
+    <button class="btn btn-purple btn-sm" onclick="openMsgWith('${id}','${c.prenom} ${c.nom}')">💬 Envoyer message</button>
+    <a href="candidat.html" target="_blank" class="btn btn-ghost btn-sm">👁 Vue candidat</a>
+    <button class="btn btn-ghost btn-sm" onclick="copyId('${id}')">📋 Copier ID</button>`;
+}
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('panelOverlay').style.display = 'none';
+}
+async function updateStatut(id, statut) {
+  await api('PUT', `/candidatures/${id}`, { statut });
+  toast('Statut mis à jour ✓', 'ok');
+  loadCandidatures();
+}
+async function validerEtape(id, num) {
+  await api('PUT', `/candidatures/${id}/etape/${num}`, { statut: 'done' });
+  toast(`Étape ${num} validée ✓`, 'ok');
+  openDetail(id);
+}
+function copyId(id) { navigator.clipboard?.writeText(id); toast(`ID copié: ${id}`, 'ok'); }
+
+/* ══ DOCUMENTS ══ */
+async function loadDocuments() {
+  const r = await api('GET', '/candidatures?limit=50');
+  const allDocs = [];
+  (r.data || []).forEach(c => {
+    if (c.docs) c.docs.filter(d => d.statut === 'recu').forEach(d => allDocs.push({ ...d, cand: c }));
+  });
+  // Demo
+  document.getElementById('docsTable').innerHTML = DEMO_CANDS.map(c =>
+    ['Photos identité','Casier judiciaire'].map(d => `<tr>
+      <td style="font-weight:600">${c.prenom} ${c.nom} <span style="opacity:.4;font-size:.72rem">${c.id}</span></td>
+      <td style="opacity:.7;font-size:.83rem">${d}</td>
+      <td><span class="badge doc_no">Manquant</span></td>
+      <td><button class="btn btn-yellow btn-sm" onclick="toast('Rappel envoyé !','ok')">📩 Rappel</button></td>
+    </tr>`).join('')
+  ).join('');
+}
+
+/* ══ MESSAGES ══ */
+async function loadConversations() {
+  const list = document.getElementById('convList');
+  list.innerHTML = DEMO_CANDS.map(c => `
+    <div onclick="openConv('${c.id}','${c.prenom} ${c.nom}')" style="padding:12px 16px;display:flex;gap:10px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--purple);display:grid;place-items:center;font-weight:700;font-size:.88rem;flex-shrink:0;color:#000">${c.prenom[0]}</div>
+      <div><div style="font-size:.83rem;font-weight:600">${c.prenom} ${c.nom}</div><div style="font-size:.72rem;opacity:.4">${c.filiere}</div></div>
+    </div>`).join('');
+}
+async function openConv(id, name) {
+  currentConv = id;
+  document.getElementById('chatHeader').textContent = name;
+  const msgs = await api('GET', `/candidatures/${id}/msgs`);
+  document.getElementById('chatMsgs').innerHTML = (msgs || []).map(m => `
+    <div style="display:flex;flex-direction:column;align-items:${m.sender_role==='conseiller'?'flex-end':'flex-start'}">
+      <div style="max-width:75%;background:${m.sender_role==='conseiller'?'var(--purple)':'var(--s1)'};color:${m.sender_role==='conseiller'?'#000':'#fff'};border-radius:14px;padding:10px 14px;font-size:.83rem;line-height:1.5">${m.content}</div>
+      <div style="font-size:.65rem;opacity:.35;margin-top:3px">${m.created_at?.slice(11,16)||''}</div>
+    </div>`).join('');
+}
+function openMsgWith(id, name) {
+  showView('messages', null);
+  document.querySelectorAll('.sb-item').forEach(x => x.classList.remove('active'));
+  setTimeout(() => { openConv(id, name); closeDetail(); }, 300);
+}
+async function sendAdminMsg() {
+  if (!currentConv) return;
+  const inp = document.getElementById('adminMsgInput');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  await api('POST', `/candidatures/${currentConv}/msgs`, { content: msg, sender: 'Équipe RusStudy', sender_role: 'conseiller' });
+  inp.value = '';
+  openConv(currentConv, document.getElementById('chatHeader').textContent);
+  toast('Message envoyé ✓', 'ok');
+}
+
+/* ══ STATS ══ */
+async function loadStats() {
+  const s = await api('GET', '/stats');
+  document.getElementById('s_total').textContent = s.total;
+  document.getElementById('s_admis').textContent = s.total ? Math.round(s.admis / s.total * 100) + '%' : '—';
+  document.getElementById('s_month').textContent = s.moisActuel;
+  renderBarChart('statsFiliere', s.filieres.map(x => ({ label: x.filiere, val: x.n, color: '#2460E8' })), s.total);
+  renderBarChart('statsVille', s.villes.map(x => ({ label: x.ville_russie || '?', val: x.n, color: '#22C55E' })), s.total);
+}
+
+/* ══ CHARTS ══ */
+function renderBarChart(containerId, data, total) {
+  const max = Math.max(...data.map(d => d.val), 1);
+  document.getElementById(containerId).innerHTML = data.map(d => `
+    <div class="bar-item">
+      <div class="bar-label">${d.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${d.val/max*100}%;background:${d.color}"></div></div>
+      <div class="bar-val">${d.val}</div>
+    </div>`).join('');
+}
+
+/* ══ NEW CAND MODAL ══ */
+function openNewModal() { document.getElementById('newModal').style.display = 'flex'; }
+function closeNewModal() { document.getElementById('newModal').style.display = 'none'; }
+async function createCandidature() {
+  const prenom = document.getElementById('n_prenom').value;
+  const nom = document.getElementById('n_nom').value;
+  const email = document.getElementById('n_email').value;
+  const phone = document.getElementById('n_phone').value;
+  const filiere = document.getElementById('n_filiere').value;
+  if (!prenom || !nom || !email || !phone || !filiere) { toast('Champs obligatoires manquants', 'err'); return; }
+  try {
+    const r = await api('POST', '/candidatures', { prenom, nom, email, phone, filiere, ville_russie: document.getElementById('n_ville').value });
+    toast(`Dossier créé: ${r.id || 'RS-2025-XXX'} ✓`, 'ok');
+    closeNewModal();
+    loadCandidatures();
+  } catch { toast('Erreur lors de la création', 'err'); }
+}
+
+/* ══ HELPERS ══ */
+function labelStatut(s) { return { nouveau:'Nouveau', en_cours:'En cours', admis:'Admis ✓', refuse:'Refusé' }[s] || s; }
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Auto login demo
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('adminToken');
+  if (saved) { TOKEN = saved; document.getElementById('loginPage').style.display = 'none'; document.getElementById('appLayout').style.display = 'grid'; loadDashboard(); }
+});
+</script>
+</body>
+</html>
