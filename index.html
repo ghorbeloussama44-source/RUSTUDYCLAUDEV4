@@ -81,9 +81,9 @@
 html{scroll-behavior:smooth}
 body{font-family:'Space Grotesk',sans-serif;background:#F0EBE3;color:#0A0A0A;overflow-x:hidden}
 :root{
-  --cream:#F0EBE3;--black:#0A0A0A;
-  --blue:#2460E8;--orange:#F97316;--yellow:#FBBB21;
-  --red:#EF4444;--green:#22C55E;--purple:#A855F7;--white:#fff;--pad:16px;
+  --cream:#F4F5F7;--black:#0A0A0A;
+  --blue:#0039A6;--blue-bright:#2F6FED;--orange:#D52B1E;--yellow:#fff;
+  --red:#D52B1E;--green:#071A3D;--purple:#7A1620;--white:#fff;--pad:16px;
 }
 nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px var(--pad);background:var(--cream);transition:border-bottom .2s}
 .logo{display:flex;flex-direction:column;text-decoration:none;color:var(--black)}
@@ -91,7 +91,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .logo-main span{color:var(--purple)}
 .logo-sub{font-size:.48rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;opacity:.5;margin-top:1px}
 .nav-r{display:flex;gap:8px;align-items:center}
-.pill-cta{background:var(--purple);border:none;border-radius:50px;padding:11px 20px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.88rem;color:var(--black);cursor:pointer;text-decoration:none;transition:filter .15s,transform .15s}
+.pill-cta{background:var(--purple);border:none;border-radius:50px;padding:11px 20px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.88rem;color:#fff;cursor:pointer;text-decoration:none;transition:filter .15s,transform .15s}
 .pill-cta:hover{filter:brightness(1.1);transform:scale(1.03)}
 .sq-btn{width:48px;height:48px;border-radius:12px;background:var(--black);border:none;cursor:pointer;display:grid;place-items:center;transition:transform .15s;flex-shrink:0}
 .sq-btn:hover{transform:scale(1.05)}
@@ -124,9 +124,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .card p{font-size:.9rem;line-height:1.65;margin-top:10px;opacity:.78;max-width:400px}
 .c-arrow{position:absolute;top:22px;right:22px;width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.12);display:grid;place-items:center}
 .c-arrow svg{stroke:currentColor;fill:none;width:16px;height:16px;stroke-width:2.5}
-.bg-blue{background:var(--blue);color:#fff}.bg-orange{background:var(--orange);color:var(--black)}
-.bg-yellow{background:var(--yellow);color:var(--black)}.bg-green{background:var(--green);color:var(--black)}
-.bg-purple{background:var(--purple);color:var(--black)}.bg-cream{background:var(--cream);color:var(--black);border:1.5px solid rgba(0,0,0,.1)}
+.bg-blue{background:var(--blue);color:#fff}.bg-orange{background:var(--orange);color:#fff}
+.bg-yellow{background:var(--yellow);color:var(--black);border:1.5px solid rgba(0,0,0,.1)}.bg-green{background:var(--green);color:#fff}
+.bg-purple{background:var(--purple);color:#fff}.bg-cream{background:var(--cream);color:var(--black);border:1.5px solid rgba(0,0,0,.1)}
 .tunnel-wrap{margin:10px var(--pad) 0;border-radius:22px;overflow:hidden;position:relative;background:var(--cream);border:1.5px solid rgba(0,0,0,.1)}
 #tunnelCanvas{display:block;width:100%;aspect-ratio:1/1.05}
 .tunnel-caption{position:absolute;bottom:0;left:0;right:0;padding:20px 24px;background:linear-gradient(to top,rgba(240,235,227,.95) 60%,transparent)}
@@ -162,16 +162,17 @@ canvas.px{display:block;image-rendering:pixelated;position:relative;z-index:2;wi
 .prog-body a svg{stroke:currentColor;fill:none;width:13px;height:13px;stroke-width:2.5;transition:transform .2s}
 .prog-body a:hover svg{transform:translate(3px,-3px)}
 .unis{padding:10px var(--pad) 0}
-.unis-header{background:var(--green);border-radius:22px;padding:28px 24px;margin-bottom:8px}
-.unis-header .c-label{border-color:rgba(0,0,0,.2)}
+.unis-header{background:var(--green);color:#fff;border-radius:22px;padding:28px 24px;margin-bottom:8px}
+.unis-header .c-label{border-color:rgba(255,255,255,.25)}
 .unis-header h2{font-size:1.8rem;font-weight:700;letter-spacing:-.04em;margin-top:4px}
 .unis-header p{font-size:.85rem;opacity:.65;margin-top:6px;line-height:1.5}
 .unis-scroll{overflow:hidden;padding:2px 0}
 .unis-track{display:flex;gap:8px;animation:tick 28s linear infinite;width:max-content}
 .unis-track:hover{animation-play-state:paused}
-.uni-chip{background:#fff;border-radius:50px;padding:12px 20px;display:flex;align-items:center;gap:10px;white-space:nowrap;border:1.5px solid rgba(0,0,0,.07);transition:background .18s;flex-shrink:0}
-.uni-chip:hover{background:var(--yellow)}
-.uni-chip .badge{background:var(--black);color:#fff;border-radius:50px;padding:2px 8px;font-size:.62rem;font-weight:700;letter-spacing:.05em}
+.uni-chip{background:#fff;border-radius:50px;padding:12px 20px;display:flex;align-items:center;gap:10px;white-space:nowrap;border:1.5px solid rgba(0,0,0,.07);transition:background .18s,color .18s;flex-shrink:0}
+.uni-chip:hover{background:var(--blue);color:#fff}
+.uni-chip:hover .badge{background:#fff;color:var(--blue)}
+.uni-chip .badge{background:var(--black);color:#fff;border-radius:50px;padding:2px 8px;font-size:.62rem;font-weight:700;letter-spacing:.05em;transition:background .18s,color .18s}
 .uni-chip span{font-weight:600;font-size:.83rem}
 .testis{padding:10px var(--pad) 0;display:flex;flex-direction:column;gap:8px}
 .testi{border-radius:22px;padding:28px 24px;transition:transform .25s cubic-bezier(.23,1,.32,1);will-change:transform}
@@ -184,19 +185,19 @@ canvas.px{display:block;image-rendering:pixelated;position:relative;z-index:2;wi
 .testi-r{font-size:.73rem;opacity:.6;margin-top:2px}
 .cta-wrap{padding:10px var(--pad) 0}
 .cta-box{background:var(--black);color:#fff;border-radius:22px;padding:34px 24px 30px;text-align:center}
-.cta-box .c-label{border-color:rgba(255,255,255,.2);color:var(--purple);margin-bottom:14px}
+.cta-box .c-label{border-color:rgba(255,255,255,.2);color:var(--red);margin-bottom:14px}
 .cta-box h2{font-size:clamp(1.7rem,6vw,2.8rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:10px}
 .cta-box>p{font-size:.88rem;opacity:.45;line-height:1.65;margin-bottom:24px}
 .cta-inputs{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
 .cta-inputs input,.cta-inputs select{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.13);border-radius:50px;padding:13px 20px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;-webkit-appearance:none}
 .cta-inputs input::placeholder{color:rgba(255,255,255,.28)}
-.cta-inputs input:focus,.cta-inputs select:focus{border-color:var(--purple)}
+.cta-inputs input:focus,.cta-inputs select:focus{border-color:var(--red)}
 .cta-inputs select option{background:#111;color:#fff}
-.submit{width:100%;background:var(--purple);color:var(--black);border:none;border-radius:50px;padding:15px 24px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:filter .15s,transform .15s;margin-top:2px}
+.submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:50px;padding:15px 24px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:filter .15s,transform .15s;margin-top:2px}
 .submit:hover{filter:brightness(1.1);transform:scale(1.02)}
 .trust{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:18px}
 .trust span{font-size:.72rem;opacity:.32;display:flex;align-items:center;gap:4px}
-.trust span::before{content:'✓';color:var(--green);font-weight:700;opacity:1}
+.trust span::before{content:'✓';color:var(--blue-bright);font-weight:700;opacity:1}
 .footer-wrap{margin:10px var(--pad) 20px;border-radius:22px;overflow:hidden}
 footer{background:var(--black);color:#fff;padding:32px 22px 0}
 footer>p{font-size:.82rem;opacity:.32;line-height:1.7;max-width:280px;margin-top:8px}
@@ -215,12 +216,12 @@ footer>p{font-size:.82rem;opacity:.32;line-height:1.7;max-width:280px;margin-top
 .footer-bottom-bar p{font-size:.72rem;opacity:.22}
 .socials{display:flex;gap:6px}
 .soc{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.07);display:grid;place-items:center;text-decoration:none;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.4);transition:background .18s,color .18s}
-.soc:hover{background:var(--purple);color:var(--black)}
+.soc:hover{background:var(--blue);color:#fff}
 .mob-nav{position:fixed;inset:0;z-index:900;background:var(--cream);display:none;flex-direction:column;padding:80px var(--pad) var(--pad);gap:8px;overflow-y:auto}
 .mob-nav.open{display:flex}
 .mob-nav a{display:flex;align-items:center;justify-content:space-between;border-radius:18px;padding:22px 20px;font-weight:700;font-size:1.15rem;text-decoration:none;color:var(--black)}
 .mob-nav-top{position:fixed;top:0;left:0;right:0;z-index:910;display:flex;align-items:center;justify-content:space-between;padding:14px var(--pad);background:var(--cream)}
-.mob-apply{background:var(--purple);border-radius:50px;padding:15px 20px;text-align:center;font-weight:700;font-size:1rem;color:var(--black);text-decoration:none;margin-top:8px}
+.mob-nav a.mob-apply{background:var(--red);border-radius:50px;padding:15px 20px;text-align:center;font-weight:700;font-size:1rem;color:#fff;text-decoration:none;margin-top:8px}
 .reveal{opacity:0;transform:translateY(32px) scale(.97);transition:opacity .6s ease,transform .6s cubic-bezier(.23,1,.32,1)}
 .reveal.in{opacity:1;transform:none}
 @media(min-width:640px){.cards{display:grid;grid-template-columns:1fr 1fr}.cards .wide{grid-column:1/-1}.programs{display:grid;grid-template-columns:1fr 1fr}.testis{display:grid;grid-template-columns:repeat(3,1fr)}}
@@ -231,13 +232,16 @@ footer>p{font-size:.82rem;opacity:.32;line-height:1.7;max-width:280px;margin-top
 .gr-header p{font-size:.85rem;opacity:.5;margin-top:6px;line-height:1.55;max-width:480px}
 .gr-grid{display:flex;flex-direction:column;gap:8px}
 .gr-item{border-radius:18px;padding:20px 22px;display:flex;align-items:flex-start;gap:14px;border:1.5px solid rgba(0,0,0,.08);background:#fff}
-.gr-icon{width:38px;height:38px;border-radius:50%;background:var(--purple);display:grid;place-items:center;flex-shrink:0;font-size:1rem}
+.gr-icon{width:38px;height:38px;border-radius:50%;background:var(--purple);color:#fff;display:grid;place-items:center;flex-shrink:0}
+.gr-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.ico{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;flex-shrink:0;vertical-align:-2px;margin-right:2px}
+.prog-tag .ico{width:11px;height:11px;stroke-width:2.6;margin-right:3px}
 .gr-item h3{font-size:.95rem;font-weight:700;margin-bottom:3px}
 .gr-item p{font-size:.8rem;opacity:.65;line-height:1.55}
 @media(min-width:640px){.gr-grid{display:grid;grid-template-columns:1fr 1fr}}
 /* ── FAQ ── */
 .faq{padding:10px var(--pad) 0;display:flex;flex-direction:column;gap:8px}
-.faq-header{border-radius:22px;padding:26px 24px;background:var(--yellow)}
+.faq-header{border-radius:22px;padding:26px 24px;background:var(--yellow);border:1.5px solid rgba(0,0,0,.08)}
 .faq-header h2{font-size:1.7rem;font-weight:700;letter-spacing:-.04em;color:var(--black)}
 .faq-list{display:flex;flex-direction:column;gap:8px}
 .faq-item{border-radius:18px;background:#fff;border:1.5px solid rgba(0,0,0,.08);overflow:hidden}
@@ -256,8 +260,8 @@ table.compare-table{width:100%;border-collapse:collapse;font-size:.82rem;min-wid
 table.compare-table caption{text-align:left;padding:16px 20px 0;font-size:.72rem;opacity:.45;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
 table.compare-table th,table.compare-table td{padding:14px 18px;text-align:left;border-bottom:1px solid rgba(0,0,0,.07)}
 table.compare-table thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;opacity:.55}
-table.compare-table thead th.col-us{background:var(--purple);opacity:1;color:var(--black);border-radius:14px 14px 0 0}
-table.compare-table td.col-us{background:rgba(168,85,247,.08);font-weight:700}
+table.compare-table thead th.col-us{background:var(--purple);opacity:1;color:#fff;border-radius:14px 14px 0 0}
+table.compare-table td.col-us{background:rgba(122,22,32,.08);font-weight:700}
 table.compare-table tbody tr:last-child td{border-bottom:none}
 .tick-yes{color:var(--green);font-weight:700}.tick-no{color:rgba(0,0,0,.3)}.tick-mid{color:var(--orange);font-weight:600}
 .compare-note{font-size:.72rem;opacity:.4;padding:14px 20px;line-height:1.6}
@@ -266,25 +270,25 @@ table.compare-table tbody tr:last-child td{border-bottom:none}
 <body>
 <nav id="nav">
   <a href="#" class="logo"><span class="logo-main">Rus<span>Study</span>.</span><span class="logo-sub">Études en Russie</span></a>
-  <div class="nav-r"><a href="immersion.html" class="pill-cta" style="background:var(--black);color:#fff">🎬 Visite 3D</a><a href="#" class="pill-cta" onclick="openModal();return false">Postuler</a><button class="sq-btn" id="menuBtn"><svg viewBox="0 0 24 24"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button></div>
+  <div class="nav-r"><a href="immersion.html" class="pill-cta" style="background:var(--black);color:#fff"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polygon points="10 8.5 16 12 10 15.5" fill="currentColor" stroke="none"/></svg> Visite 3D</a><a href="#" class="pill-cta" onclick="openModal();return false">Postuler</a><button class="sq-btn" id="menuBtn"><svg viewBox="0 0 24 24"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button></div>
 </nav>
 <div class="mob-nav" id="mobNav">
-  <div class="mob-nav-top"><a href="#" class="logo" style="color:#0A0A0A"><span class="logo-main">Rus<span style="color:#A855F7">Study</span>.</span><span class="logo-sub">Études en Russie</span></a><button class="sq-btn" id="closeBtn"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
-  <a href="immersion.html" style="background:#0A0A0A;color:#fff"><span>🎬 Visite immersive 3D</span><span>↗</span></a>
-  <a href="#pourquoi" style="background:#2460E8;color:#fff"><span>01 · Pourquoi la Russie</span><span>↗</span></a>
-  <a href="#processus" style="background:#FBBB21;color:#0A0A0A"><span>02 · Comment ça marche</span><span>↗</span></a>
-  <a href="#programmes" style="background:#F97316;color:#0A0A0A"><span>03 · Programmes</span><span>↗</span></a>
-  <a href="#temoignages" style="background:#22C55E;color:#0A0A0A"><span>04 · Témoignages</span><span>↗</span></a>
-  <a href="#comparatif" style="background:#2460E8;color:#fff"><span>05 · Comparatif</span><span>↗</span></a>
-  <a href="#faq" style="background:#FBBB21;color:#0A0A0A"><span>06 · FAQ</span><span>↗</span></a>
+  <div class="mob-nav-top"><a href="#" class="logo" style="color:#0A0A0A"><span class="logo-main">Rus<span style="color:var(--purple)">Study</span>.</span><span class="logo-sub">Études en Russie</span></a><button class="sq-btn" id="closeBtn"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
+  <a href="immersion.html" style="background:#0A0A0A;color:#fff"><span><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polygon points="10 8.5 16 12 10 15.5" fill="currentColor" stroke="none"/></svg> Visite immersive 3D</span><span>↗</span></a>
+  <a href="#pourquoi" style="background:var(--blue);color:#fff"><span>01 · Pourquoi la Russie</span><span>↗</span></a>
+  <a href="#processus" style="background:var(--purple);color:#fff"><span>02 · Comment ça marche</span><span>↗</span></a>
+  <a href="#programmes" style="background:var(--orange);color:#fff"><span>03 · Programmes</span><span>↗</span></a>
+  <a href="#temoignages" style="background:var(--green);color:#fff"><span>04 · Témoignages</span><span>↗</span></a>
+  <a href="#comparatif" style="background:var(--blue);color:#fff"><span>05 · Comparatif</span><span>↗</span></a>
+  <a href="#faq" style="background:var(--yellow);color:var(--black);border:1.5px solid rgba(0,0,0,.1)"><span>06 · FAQ</span><span>↗</span></a>
   <a href="#" class="mob-apply" onclick="openModal();return false">Postuler maintenant →</a>
 </div>
 <div class="hero"><div class="hero-box reveal" id="heroBox"><canvas id="heroCanvas"></canvas>
   <div class="hero-overlay"><h1 class="hero-h1">Étudie en Russie.<br>Change ta vie.</h1><p class="hero-sub">Universités de rang mondial · Frais abordables · Accompagnement total</p></div>
   <a href="#" class="hero-book" onclick="openModal();return false">Commencer mon dossier<span class="arr"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span></a>
 </div></div>
-<div class="ticker reveal" style="background:#2460E8;color:#fff"><div class="ticker-inner"><span>Médecine</span><span class="sep">◆</span><span>Ingénierie</span><span class="sep">⚡</span><span>Pharmacie</span><span class="sep">◆</span><span>Architecture</span><span class="sep">⚡</span><span>Économie</span><span class="sep">◆</span><span>Droit</span><span class="sep">⚡</span><span>Informatique</span><span class="sep">◆</span><span>Sciences</span><span class="sep">⚡</span><span>Médecine</span><span class="sep">◆</span><span>Ingénierie</span><span class="sep">⚡</span><span>Pharmacie</span><span class="sep">◆</span><span>Architecture</span><span class="sep">⚡</span><span>Économie</span><span class="sep">◆</span><span>Droit</span><span class="sep">⚡</span><span>Informatique</span><span class="sep">◆</span><span>Sciences</span><span class="sep">⚡</span></div></div>
-<div class="stats reveal"><div class="stat"><div class="stat-n" style="color:#A855F7">1 200+</div><div class="stat-l">Étudiants placés</div></div><div class="stat"><div class="stat-n" style="color:#FBBB21">40+</div><div class="stat-l">Universités</div></div><div class="stat"><div class="stat-n" style="color:#22C55E">10 ans</div><div class="stat-l">Expérience</div></div></div>
+<div class="ticker reveal" style="background:var(--blue);color:#fff"><div class="ticker-inner"><span>Médecine</span><span class="sep">◆</span><span>Ingénierie</span><span class="sep">⚡</span><span>Pharmacie</span><span class="sep">◆</span><span>Architecture</span><span class="sep">⚡</span><span>Économie</span><span class="sep">◆</span><span>Droit</span><span class="sep">⚡</span><span>Informatique</span><span class="sep">◆</span><span>Sciences</span><span class="sep">⚡</span><span>Médecine</span><span class="sep">◆</span><span>Ingénierie</span><span class="sep">⚡</span><span>Pharmacie</span><span class="sep">◆</span><span>Architecture</span><span class="sep">⚡</span><span>Économie</span><span class="sep">◆</span><span>Droit</span><span class="sep">⚡</span><span>Informatique</span><span class="sep">◆</span><span>Sciences</span><span class="sep">⚡</span></div></div>
+<div class="stats reveal"><div class="stat"><div class="stat-n" style="color:var(--blue-bright)">1 200+</div><div class="stat-l">Étudiants placés</div></div><div class="stat"><div class="stat-n" style="color:#fff">40+</div><div class="stat-l">Universités</div></div><div class="stat"><div class="stat-n" style="color:var(--red)">10 ans</div><div class="stat-l">Expérience</div></div></div>
 <div id="pourquoi"></div>
 <div class="cards">
   <div class="card bg-blue wide reveal"><div class="c-label">Pourquoi la Russie</div><h2>Diplômes reconnus dans 100+ pays.</h2><p>Les diplômes russes sont validés partout en Europe, au Moyen-Orient et en Afrique — notamment en médecine et ingénierie.</p><div class="c-arrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div></div>
@@ -298,7 +302,7 @@ table.compare-table tbody tr:last-child td{border-bottom:none}
   <div class="card bg-cream reveal"><div class="c-label">Logement</div><h2>Chambre prête à l'arrivée.</h2><p>Résidences universitaires réservées à l'avance. Zéro stress à l'atterrissage.</p><div class="c-arrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div></div>
 </div>
 <div style="padding:8px var(--pad) 0" class="reveal"><div class="pixel-card"><div class="pixel-grid"><canvas class="px" id="cvs1"></canvas></div><h3>Ce qui nous définit.</h3><p>Chaque étudiant qui part en Russie avec nous revient avec un diplôme qui ouvre des portes partout dans le monde.</p></div></div>
-<div class="ticker rev reveal" style="background:#FBBB21;color:#0A0A0A;margin-top:10px"><div class="ticker-inner"><span>Admission rapide</span><span class="sep">◆</span><span>Visa garanti</span><span class="sep">⚡</span><span>Support 24/7</span><span class="sep">◆</span><span>Logement inclus</span><span class="sep">⚡</span><span>Cours en anglais</span><span class="sep">◆</span><span>Bourse possible</span><span class="sep">⚡</span><span>Admission rapide</span><span class="sep">◆</span><span>Visa garanti</span><span class="sep">⚡</span><span>Support 24/7</span><span class="sep">◆</span><span>Logement inclus</span><span class="sep">⚡</span><span>Cours en anglais</span><span class="sep">◆</span><span>Bourse possible</span><span class="sep">⚡</span></div></div>
+<div class="ticker rev reveal" style="background:var(--red);color:#fff;margin-top:10px"><div class="ticker-inner"><span>Admission rapide</span><span class="sep">◆</span><span>Visa garanti</span><span class="sep">⚡</span><span>Support 24/7</span><span class="sep">◆</span><span>Logement inclus</span><span class="sep">⚡</span><span>Cours en anglais</span><span class="sep">◆</span><span>Bourse possible</span><span class="sep">⚡</span><span>Admission rapide</span><span class="sep">◆</span><span>Visa garanti</span><span class="sep">⚡</span><span>Support 24/7</span><span class="sep">◆</span><span>Logement inclus</span><span class="sep">⚡</span><span>Cours en anglais</span><span class="sep">◆</span><span>Bourse possible</span><span class="sep">⚡</span></div></div>
 <div id="processus" class="process-wrap">
   <div class="proc-header reveal"><h2>Comment ça marche</h2><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
   <div class="proc-item bg-cream reveal"><div class="proc-num">01</div><div class="proc-text"><h3>Consultation gratuite</h3><p>Évaluation de ton profil, orientation filière et université. 100% sans engagement.</p></div></div>
@@ -309,7 +313,7 @@ table.compare-table tbody tr:last-child td{border-bottom:none}
 </div>
 <div style="padding:8px var(--pad) 0" class="reveal"><div class="pixel-card" style="background:var(--blue)"><div class="pixel-grid"><canvas class="px" id="cvs2"></canvas></div><h3>Fait pour toi.</h3><p>Depuis Tunis jusqu'à Moscou, on gère tout. Tu te concentres sur tes études.</p></div></div>
 <div id="programmes" class="programs" style="margin-top:8px">
-  <div class="prog reveal"><div class="prog-img-fake"><canvas id="pc1" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="prog-img-overlay"><div class="prog-tags"><span class="prog-tag">⭐ Très demandé</span><span class="prog-tag">6 ans</span><span class="prog-tag">3 500€/an</span></div><h3>Médecine Générale</h3></div></div><div class="prog-body bg-blue" style="border-radius:0 0 22px 22px"><p>Diplôme reconnu par l'OMS. Universités classées avec labos et cliniques intégrées.</p><a href="#" onclick="openModal();return false" style="color:#FBBB21">Postuler <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a></div></div>
+  <div class="prog reveal"><div class="prog-img-fake"><canvas id="pc1" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="prog-img-overlay"><div class="prog-tags"><span class="prog-tag"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3.5l2.47 5.18 5.53.66-4.1 3.88 1.09 5.63L12 16.1l-4.99 2.75 1.09-5.63-4.1-3.88 5.53-.66z" stroke="currentColor"/></svg> Très demandé</span><span class="prog-tag">6 ans</span><span class="prog-tag">3 500€/an</span></div><h3>Médecine Générale</h3></div></div><div class="prog-body bg-blue" style="border-radius:0 0 22px 22px"><p>Diplôme reconnu par l'OMS. Universités classées avec labos et cliniques intégrées.</p><a href="#" onclick="openModal();return false" style="color:var(--red)">Postuler <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a></div></div>
   <div class="prog reveal"><div class="prog-img-fake"><canvas id="pc2" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="prog-img-overlay"><div class="prog-tags"><span class="prog-tag">5 ans</span><span class="prog-tag">2 800€/an</span></div><h3>Ingénierie & Tech</h3></div></div><div class="prog-body bg-orange" style="border-radius:0 0 22px 22px"><p>Génie civil, mécanique, informatique dans des établissements à la pointe de la recherche.</p><a href="#" onclick="openModal();return false">Postuler <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a></div></div>
   <div class="prog reveal"><div class="prog-img-fake"><canvas id="pc3" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="prog-img-overlay"><div class="prog-tags"><span class="prog-tag">5 ans</span><span class="prog-tag">3 200€/an</span></div><h3>Pharmacie & Dentaire</h3></div></div><div class="prog-body bg-yellow" style="border-radius:0 0 22px 22px"><p>Formations reconnues MENA avec stages cliniques intégrés et labos modernes.</p><a href="#" onclick="openModal();return false">Postuler <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a></div></div>
   <div class="prog reveal"><div class="prog-img-fake"><canvas id="pc4" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div class="prog-img-overlay"><div class="prog-tags"><span class="prog-tag">4-5 ans</span><span class="prog-tag">2 200€/an</span></div><h3>Économie & Business</h3></div></div><div class="prog-body bg-purple" style="border-radius:0 0 22px 22px"><p>MBA, finance internationale et commerce reconnus en Tunisie, Europe et Moyen-Orient.</p><a href="#" onclick="openModal();return false">Postuler <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a></div></div>
@@ -324,10 +328,10 @@ table.compare-table tbody tr:last-child td{border-bottom:none}
 <div id="garanties" class="guarantees reveal">
   <div class="gr-header"><div class="c-label" style="border-color:rgba(255,255,255,.2);color:var(--purple)">Nos engagements</div><h2>Ce que tu peux attendre de nous.</h2><p>Pas de promesse en l'air : voici exactement ce que RusStudy s'engage à faire, à chaque étape de ton dossier.</p></div>
   <div class="gr-grid">
-    <div class="gr-item"><div class="gr-icon">💬</div><div><h3>Consultation 100% gratuite</h3><p>La première évaluation de ton profil ne coûte rien et ne t'engage à rien.</p></div></div>
-    <div class="gr-item"><div class="gr-icon">⏱️</div><div><h3>Réponse sous 24h</h3><p>Chaque demande reçoit une réponse d'un conseiller en moins de 24h, 7j/7.</p></div></div>
-    <div class="gr-item"><div class="gr-icon">📄</div><div><h3>Transparence sur les coûts</h3><p>Frais de scolarité, logement et démarches annoncés clairement avant toute décision — aucun frais caché.</p></div></div>
-    <div class="gr-item"><div class="gr-icon">🛂</div><div><h3>Accompagnement de bout en bout</h3><p>Du premier appel jusqu'à ton installation sur le campus en Russie : dossier, visa, assurance, logement.</p></div></div>
+    <div class="gr-item"><div class="gr-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></div><div><h3>Consultation 100% gratuite</h3><p>La première évaluation de ton profil ne coûte rien et ne t'engage à rien.</p></div></div>
+    <div class="gr-item"><div class="gr-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div><div><h3>Réponse sous 24h</h3><p>Chaque demande reçoit une réponse d'un conseiller en moins de 24h, 7j/7.</p></div></div>
+    <div class="gr-item"><div class="gr-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><polyline points="15 3 15 7 19 7"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></div><div><h3>Transparence sur les coûts</h3><p>Frais de scolarité, logement et démarches annoncés clairement avant toute décision — aucun frais caché.</p></div></div>
+    <div class="gr-item"><div class="gr-icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6z"/><polyline points="9 12 11.5 14.5 15.5 9.5"/></svg></div><div><h3>Accompagnement de bout en bout</h3><p>Du premier appel jusqu'à ton installation sur le campus en Russie : dossier, visa, assurance, logement.</p></div></div>
   </div>
 </div>
 
@@ -389,18 +393,18 @@ const tLoc=gl.getUniformLocation(prog,'t');const rLoc=gl.getUniformLocation(prog
 if(window.matchMedia('(pointer:fine)').matches){document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*12;my=(e.clientY/window.innerHeight-.5)*8})}
 function frame(){gl.viewport(0,0,cv.width,cv.height);gl.uniform1f(tLoc,(performance.now()-start)*.001);gl.uniform2f(rLoc,cv.width,cv.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);document.getElementById('heroBox').style.transform=`perspective(900px) rotateY(${mx}deg) rotateX(${-my}deg)`;requestAnimationFrame(frame)}frame();})();
 /* TUNNEL */
-(function(){const cv=document.getElementById('tunnelCanvas');const wrap=document.getElementById('tunnelWrap');function resize(){const W=wrap.offsetWidth;cv.width=W*devicePixelRatio;cv.height=Math.round(W*1.05)*devicePixelRatio;cv.style.width=W+'px';cv.style.height=Math.round(W*1.05)+'px'}resize();window.addEventListener('resize',resize);const ctx=cv.getContext('2d');const COLORS=['#2460E8','#F97316','#FBBB21','#22C55E','#A855F7','#EF4444'];const panels=[{s:'l',d:.15,c:4,o:.1},{s:'r',d:.25,c:0,o:.2},{s:'t',d:.35,c:1,o:.15},{s:'l',d:.45,c:5,o:.3},{s:'r',d:.55,c:2,o:.1},{s:'t',d:.65,c:3,o:.25},{s:'l',d:.72,c:0,o:.05},{s:'r',d:.8,c:4,o:.35},{s:'t',d:.88,c:1,o:.1},{s:'b',d:.3,c:2,o:.2},{s:'b',d:.6,c:5,o:.5}];let t=0,mx=.5,my=.5;wrap.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mx=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));my=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))});function P(x,y,z,W,H,vp){const f=.6;return{x:(vp.x+(x-vp.x)*(1-z*f))*W,y:(vp.y+(y-vp.y)*(1-z*f))*H}}function L(a,b,t){return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}}function frame(){t+=.003;const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);ctx.fillStyle='#F0EBE3';ctx.fillRect(0,0,W,H);const vp={x:.48+(mx-.5)*.04,y:.47+(my-.5)*.04};const layers=10,hC=5,vC=6;for(let l=layers;l>=0;l--){const z0=(l/layers+t*.18)%1;const a=Math.min(1,z0*2);const tl0=P(0,0,z0,W,H,vp),tr0=P(1,0,z0,W,H,vp),bl0=P(0,1,z0,W,H,vp),br0=P(1,1,z0,W,H,vp);ctx.strokeStyle=`rgba(0,0,0,${a*.18})`;ctx.lineWidth=Math.max(1,(1-z0)*2.5);for(let v=0;v<=vC;v++){const f=v/vC,Lp=L(tl0,bl0,f),Rp=L(tr0,br0,f);ctx.beginPath();ctx.moveTo(Lp.x,Lp.y);ctx.lineTo(Rp.x,Rp.y);ctx.stroke()}for(let h=0;h<=hC;h++){const f=h/hC,Tp=L(tl0,tr0,f),Bp=L(bl0,br0,f);ctx.beginPath();ctx.moveTo(Tp.x,Tp.y);ctx.lineTo(Bp.x,Bp.y);ctx.stroke()}}panels.forEach(p=>{const z=(p.d+t*.18)%1;const a=Math.min(1,z*2.5)*(1-z*.4);if(a<.05)return;let c;const sz=.18+p.o*.1;if(p.s==='l'){c=[P(0,p.o,z,W,H,vp),P(0,p.o+sz,z,W,H,vp),P(0,p.o+sz,z+.12,W,H,vp),P(0,p.o,z+.12,W,H,vp)]}else if(p.s==='r'){c=[P(1,p.o,z,W,H,vp),P(1,p.o+sz,z,W,H,vp),P(1,p.o+sz,z+.12,W,H,vp),P(1,p.o,z+.12,W,H,vp)]}else if(p.s==='t'){c=[P(p.o,0,z,W,H,vp),P(p.o+sz,0,z,W,H,vp),P(p.o+sz,0,z+.12,W,H,vp),P(p.o,0,z+.12,W,H,vp)]}else{c=[P(p.o,1,z,W,H,vp),P(p.o+sz,1,z,W,H,vp),P(p.o+sz,1,z+.12,W,H,vp),P(p.o,1,z+.12,W,H,vp)]}ctx.fillStyle=COLORS[p.c];ctx.globalAlpha=a;ctx.beginPath();ctx.moveTo(c[0].x,c[0].y);c.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.globalAlpha=1});const g=ctx.createRadialGradient(vp.x*W,vp.y*H,2,vp.x*W,vp.y*H,W*.3);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(.4,'rgba(240,235,227,.18)');g.addColorStop(1,'rgba(240,235,227,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);requestAnimationFrame(frame)}frame()})();
+(function(){const cv=document.getElementById('tunnelCanvas');const wrap=document.getElementById('tunnelWrap');function resize(){const W=wrap.offsetWidth;cv.width=W*devicePixelRatio;cv.height=Math.round(W*1.05)*devicePixelRatio;cv.style.width=W+'px';cv.style.height=Math.round(W*1.05)+'px'}resize();window.addEventListener('resize',resize);const ctx=cv.getContext('2d');const COLORS=['#0039A6','#D52B1E','#fff','#071A3D','#7A1620','#2F6FED'];const panels=[{s:'l',d:.15,c:4,o:.1},{s:'r',d:.25,c:0,o:.2},{s:'t',d:.35,c:1,o:.15},{s:'l',d:.45,c:5,o:.3},{s:'r',d:.55,c:2,o:.1},{s:'t',d:.65,c:3,o:.25},{s:'l',d:.72,c:0,o:.05},{s:'r',d:.8,c:4,o:.35},{s:'t',d:.88,c:1,o:.1},{s:'b',d:.3,c:2,o:.2},{s:'b',d:.6,c:5,o:.5}];let t=0,mx=.5,my=.5;wrap.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mx=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));my=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))});function P(x,y,z,W,H,vp){const f=.6;return{x:(vp.x+(x-vp.x)*(1-z*f))*W,y:(vp.y+(y-vp.y)*(1-z*f))*H}}function L(a,b,t){return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}}function frame(){t+=.003;const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);ctx.fillStyle='#F4F5F7';ctx.fillRect(0,0,W,H);const vp={x:.48+(mx-.5)*.04,y:.47+(my-.5)*.04};const layers=10,hC=5,vC=6;for(let l=layers;l>=0;l--){const z0=(l/layers+t*.18)%1;const a=Math.min(1,z0*2);const tl0=P(0,0,z0,W,H,vp),tr0=P(1,0,z0,W,H,vp),bl0=P(0,1,z0,W,H,vp),br0=P(1,1,z0,W,H,vp);ctx.strokeStyle=`rgba(0,0,0,${a*.18})`;ctx.lineWidth=Math.max(1,(1-z0)*2.5);for(let v=0;v<=vC;v++){const f=v/vC,Lp=L(tl0,bl0,f),Rp=L(tr0,br0,f);ctx.beginPath();ctx.moveTo(Lp.x,Lp.y);ctx.lineTo(Rp.x,Rp.y);ctx.stroke()}for(let h=0;h<=hC;h++){const f=h/hC,Tp=L(tl0,tr0,f),Bp=L(bl0,br0,f);ctx.beginPath();ctx.moveTo(Tp.x,Tp.y);ctx.lineTo(Bp.x,Bp.y);ctx.stroke()}}panels.forEach(p=>{const z=(p.d+t*.18)%1;const a=Math.min(1,z*2.5)*(1-z*.4);if(a<.05)return;let c;const sz=.18+p.o*.1;if(p.s==='l'){c=[P(0,p.o,z,W,H,vp),P(0,p.o+sz,z,W,H,vp),P(0,p.o+sz,z+.12,W,H,vp),P(0,p.o,z+.12,W,H,vp)]}else if(p.s==='r'){c=[P(1,p.o,z,W,H,vp),P(1,p.o+sz,z,W,H,vp),P(1,p.o+sz,z+.12,W,H,vp),P(1,p.o,z+.12,W,H,vp)]}else if(p.s==='t'){c=[P(p.o,0,z,W,H,vp),P(p.o+sz,0,z,W,H,vp),P(p.o+sz,0,z+.12,W,H,vp),P(p.o,0,z+.12,W,H,vp)]}else{c=[P(p.o,1,z,W,H,vp),P(p.o+sz,1,z,W,H,vp),P(p.o+sz,1,z+.12,W,H,vp),P(p.o,1,z+.12,W,H,vp)]}ctx.fillStyle=COLORS[p.c];ctx.globalAlpha=a;ctx.beginPath();ctx.moveTo(c[0].x,c[0].y);c.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.globalAlpha=1});const g=ctx.createRadialGradient(vp.x*W,vp.y*H,2,vp.x*W,vp.y*H,W*.3);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(.4,'rgba(244,245,247,.18)');g.addColorStop(1,'rgba(244,245,247,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);requestAnimationFrame(frame)}frame()})();
 /* PIXEL ART */
-function pixelArt(id,art,pal){const cv=document.getElementById(id);if(!cv)return;const ctx=cv.getContext('2d');const R=art.length,C=art[0].length;const W=cv.parentElement.offsetWidth||300,H=Math.round(W*(R/C));cv.width=W;cv.height=H;cv.style.height=H+'px';const cw=W/C,ch=H/R;ctx.fillStyle='#2460E8';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(0,0,0,.1)';ctx.lineWidth=1;for(let r=0;r<=R;r++){ctx.beginPath();ctx.moveTo(0,r*ch);ctx.lineTo(W,r*ch);ctx.stroke()}for(let c=0;c<=C;c++){ctx.beginPath();ctx.moveTo(c*cw,0);ctx.lineTo(c*cw,H);ctx.stroke()}art.forEach((row,r)=>row.forEach((v,c)=>{if(v){ctx.fillStyle=pal[v-1];ctx.fillRect(c*cw+1,r*ch+1,cw-2,ch-2)}}))}
+function pixelArt(id,art,pal){const cv=document.getElementById(id);if(!cv)return;const ctx=cv.getContext('2d');const R=art.length,C=art[0].length;const W=cv.parentElement.offsetWidth||300,H=Math.round(W*(R/C));cv.width=W;cv.height=H;cv.style.height=H+'px';const cw=W/C,ch=H/R;ctx.fillStyle='#0039A6';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(0,0,0,.1)';ctx.lineWidth=1;for(let r=0;r<=R;r++){ctx.beginPath();ctx.moveTo(0,r*ch);ctx.lineTo(W,r*ch);ctx.stroke()}for(let c=0;c<=C;c++){ctx.beginPath();ctx.moveTo(c*cw,0);ctx.lineTo(c*cw,H);ctx.stroke()}art.forEach((row,r)=>row.forEach((v,c)=>{if(v){ctx.fillStyle=pal[v-1];ctx.fillRect(c*cw+1,r*ch+1,cw-2,ch-2)}}))}
 const capArt=[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0],[0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,2,2,2,2,2,2,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,2,2,2,2,2,2,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
-pixelArt('cvs1',capArt,['#EF4444','#FBBB21']);
+pixelArt('cvs1',capArt,['#D52B1E','#fff']);
 const starArt=[[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0],[0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0],[0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0],[0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0],[0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0],[0,0,0,1,0,0,0,0,2,2,2,2,2,2,0,0,0,1,0,0],[0,0,1,1,0,0,0,0,0,2,2,2,2,0,0,0,0,1,1,0],[0,1,1,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
-pixelArt('cvs2',starArt,['#FBBB21','#22C55E']);
+pixelArt('cvs2',starArt,['#fff','#D52B1E']);
 /* PROGRAM BG */
 function drawProgBg(id,colors){const cv=document.getElementById(id);if(!cv)return;const p=cv.parentElement;cv.width=p.offsetWidth*devicePixelRatio||600;cv.height=200*devicePixelRatio;cv.style.width='100%';cv.style.height='200px';const ctx=cv.getContext('2d');const W=cv.width,H=cv.height;const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,colors[0]);g.addColorStop(1,colors[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.globalAlpha=.18;for(let i=0;i<8;i++){const x=Math.random()*W,y=Math.random()*H,r=30+Math.random()*80;ctx.beginPath();if(i%3===0){ctx.arc(x,y,r,0,Math.PI*2)}else if(i%3===1){ctx.rect(x-r/2,y-r/2,r,r)}else{ctx.moveTo(x,y-r);ctx.lineTo(x+r,y+r);ctx.lineTo(x-r,y+r);ctx.closePath()}ctx.fillStyle='#fff';ctx.fill()}ctx.globalAlpha=1}
-drawProgBg('pc1',['#0a2a6e','#1a4fcc']);drawProgBg('pc2',['#7c2600','#e05a00']);drawProgBg('pc3',['#5a4500','#b88a00']);drawProgBg('pc4',['#3b006b','#8400d4']);
+drawProgBg('pc1',['#001d54','#0039A6']);drawProgBg('pc2',['#6e0f0a','#D52B1E']);drawProgBg('pc3',['#041028','#071A3D']);drawProgBg('pc4',['#3d0b12','#7A1620']);
 /* FOOTER GRID */
-(function(){const cv=document.getElementById('gridCanvas');if(!cv)return;const footer=cv.closest('.footer-grid-art');const W=footer.offsetWidth;const H=160;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;cv.style.width=W+'px';cv.style.height=H+'px';const ctx=cv.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);ctx.fillStyle='#0A0A0A';ctx.fillRect(0,0,W,H);const cellSz=Math.round(W/14);const cols=Math.ceil(W/cellSz)+1,rows=Math.ceil(H/cellSz)+1;ctx.strokeStyle='rgba(255,255,255,0.09)';ctx.lineWidth=1;for(let r=0;r<rows;r++){ctx.beginPath();ctx.moveTo(0,r*cellSz);ctx.lineTo(W,r*cellSz);ctx.stroke()}for(let c=0;c<cols;c++){ctx.beginPath();ctx.moveTo(c*cellSz,0);ctx.lineTo(c*cellSz,H);ctx.stroke()}const sq=[{c:4,r:1,col:'#A855F7'},{c:10,r:2,col:'#2460E8'},{c:9,r:4,col:'#FBBB21'},{c:2,r:5,col:'#F97316'},{c:11,r:6,col:'#22C55E'},{c:5,r:3,col:'#EF4444'},{c:7,r:1,col:'#2460E8'},{c:13,r:3,col:'#A855F7'}];sq.forEach(s=>{if(s.c<cols&&s.r<rows){ctx.fillStyle=s.col;ctx.fillRect(s.c*cellSz+1,s.r*cellSz+1,cellSz-2,cellSz-2)}})})();
+(function(){const cv=document.getElementById('gridCanvas');if(!cv)return;const footer=cv.closest('.footer-grid-art');const W=footer.offsetWidth;const H=160;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;cv.style.width=W+'px';cv.style.height=H+'px';const ctx=cv.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);ctx.fillStyle='#0A0A0A';ctx.fillRect(0,0,W,H);const cellSz=Math.round(W/14);const cols=Math.ceil(W/cellSz)+1,rows=Math.ceil(H/cellSz)+1;ctx.strokeStyle='rgba(255,255,255,0.09)';ctx.lineWidth=1;for(let r=0;r<rows;r++){ctx.beginPath();ctx.moveTo(0,r*cellSz);ctx.lineTo(W,r*cellSz);ctx.stroke()}for(let c=0;c<cols;c++){ctx.beginPath();ctx.moveTo(c*cellSz,0);ctx.lineTo(c*cellSz,H);ctx.stroke()}const sq=[{c:4,r:1,col:'#D52B1E'},{c:10,r:2,col:'#0039A6'},{c:9,r:4,col:'#fff'},{c:2,r:5,col:'#0039A6'},{c:11,r:6,col:'#D52B1E'},{c:5,r:3,col:'#fff'},{c:7,r:1,col:'#0039A6'},{c:13,r:3,col:'#D52B1E'}];sq.forEach(s=>{if(s.c<cols&&s.r<rows){ctx.fillStyle=s.col;ctx.fillRect(s.c*cellSz+1,s.r*cellSz+1,cellSz-2,cellSz-2)}})})();
 </script>
 <script src="modal.js"></script>
 <script src="funnel.js"></script>
